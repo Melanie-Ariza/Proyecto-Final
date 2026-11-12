@@ -80,54 +80,5 @@ public class Pelicula {
                 ", estado: " + estado +
                 ", listaFunciones: " + listaFunciones;
     }
-   //Gestionar Peliculas
-    public class GestorPeliculas {
-        private List<Pelicula> listaPeliculas = new ArrayList<>();
 
-        // 1. Registrar Película
-        public boolean registrarPelicula(int codigo, String nombre, String genero, int duracion, String estado, Clasificacion clasificacion) {
-            // Validar si ya existe una película con el mismo código
-            if (consultarPelicula(codigo) != null) {
-                return false; // Ya existe
-            }
-            Pelicula nuevaPelicula = new Pelicula(codigo, nombre, genero, duracion, estado, new ArrayList<>(), clasificacion);
-            listaPeliculas.add(nuevaPelicula);
-            return true;
-        }
-
-        // 2. Consultar Película por código
-        public Pelicula consultarPelicula(int codigo) {
-            for (Pelicula pelicula : listaPeliculas) {
-                if (pelicula.getCodigo() == codigo) {
-                    return pelicula;
-                }
-            }
-            return null; // No encontrada
-        }
-
-        // 3. Modificar Película
-        public boolean modificarPelicula(int codigo, String nuevoNombre, String nuevoGenero, int nuevaDuracion, String nuevoEstado, Clasificacion nuevaClasificacion) {
-            Pelicula pelicula = consultarPelicula(codigo);
-            if (pelicula != null) {
-                pelicula.setNombre(nuevoNombre);
-                pelicula.setGenero(nuevoGenero);
-                pelicula.setDuracion(nuevaDuracion);
-                pelicula.setEstado(nuevoEstado);
-                // Si en tu modelo Pelicula tienes el setter para clasificacion, úsalo aquí:
-                // pelicula.setClasificacion(nuevaClasificacion);
-                return true;
-            }
-            return false; // No encontrada para modificar
-        }
-
-        // 4. Deshabilitar Película (cambiar estado a "INACTIVO" o "DESHABILITADO")
-        public boolean deshabilitarPelicula(int codigo) {
-            Pelicula pelicula = consultarPelicula(codigo);
-            if (pelicula != null) {
-                pelicula.setEstado("INACTIVO"); // O el valor que manejes para el estado
-                return true;
-            }
-            return false; // No encontrada
-        }
-    }
       }
