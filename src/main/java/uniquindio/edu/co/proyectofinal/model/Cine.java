@@ -230,20 +230,6 @@ public class Cine {
         return deshabilitada;
     }
 
-
-    // ==========================================
-    // 4. PROGRAMAR Y GESTIONAR FUNCIONES
-    // ==========================================
-
-    public boolean programarFuncion(int codigo, Pelicula pelicula, Sala sala, LocalTime hora, LocalDate fecha, double valorBase, EstadoFuncion estadoFuncion) {
-        if (consultarFuncion(codigo) != null || pelicula == null || sala == null) return false;
-
-        Funcion nuevaFuncion = new Funcion(codigo, pelicula, sala, hora, fecha, valorBase, estadoFuncion, new ArrayList<>());
-        this.listaFunciones.add(nuevaFuncion);
-        pelicula.getListaFunciones().add(nuevaFuncion); // Añade la función a la lista interna de la película
-        return true;
-    }
-
     // ==========================================
     // 4. CONSULTAS ESPECÍFICAS SOLICITADAS
     // ==========================================

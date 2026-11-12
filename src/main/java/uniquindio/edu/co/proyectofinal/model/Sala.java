@@ -78,6 +78,18 @@ public class Sala {
                 ", Lista asientos: " + listaAsientos;
     }
 
+    public void generarAsientos() {
+        listaAsientos.clear();
+        int sillasPorFila = 10;
+        int contadorCodigo = 1;
+
+        for (int i = 0; i <= capacidad; i++) {
+            char letraFila = (char) ('A' + (i / sillasPorFila));
+            int numeroSilla = (i % sillasPorFila) + 1;
+            listaAsientos.add(new Asiento(contadorCodigo++, String.valueOf(letraFila), numeroSilla, EstadoAsiento.DISPONIBLE));
+        }
+    }
+
     public int contarAsientosDisponibles() {
         int disponibles = 0;
         for (Asiento asiento : listaAsientos) {

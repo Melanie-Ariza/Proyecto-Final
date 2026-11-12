@@ -7,7 +7,7 @@ public class Asiento {
     private int numero;
     private EstadoAsiento estado;
 
-    public Asiento(int codigo, String fila, int numero) {
+    public Asiento(int codigo, String fila, int numero, EstadoAsiento estado) {
         this.codigo = codigo;
         this.fila = fila;
         this.numero = numero;
