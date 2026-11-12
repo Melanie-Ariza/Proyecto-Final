@@ -17,19 +17,6 @@ public class Sala {
         this.estado = estado;
         this.coleccionAsientos = coleccionAsientos;
         this.listaAsientos = new ArrayList<>();
-        generarAsientos();
-    }
-
-    private void generarAsientos() {
-        listaAsientos.clear();
-        int sillasPorFila = 10;
-        int contadorCodigo = 1;
-
-        for (int i = 0; i < capacidad; i++) {
-            char letraFila = (char) ('A' + (i / sillasPorFila));
-            int numeroSilla = (i % sillasPorFila) + 1;
-            listaAsientos.add(new Asiento(contadorCodigo++, String.valueOf(letraFila), numeroSilla));
-        }
     }
 
     public int getCodigo() {
@@ -54,7 +41,6 @@ public class Sala {
 
     public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
-        generarAsientos();
     }
 
     public EstadoSala getEstado() {
@@ -81,8 +67,15 @@ public class Sala {
         this.listaAsientos = listaAsientos;
     }
 
-    public boolean estaDisponible() {
-        return this.estado == EstadoSala.DISPONIBLE;
+    @Override
+    public String toString() {
+        return "Sala: " +
+                "Código: " + codigo +
+                ", Número: " + numero +
+                ", Capacidad: " + capacidad +
+                ", Estado: " + estado +
+                ", Colección asientos: " + coleccionAsientos +
+                ", Lista asientos: " + listaAsientos;
     }
 
     public int contarAsientosDisponibles() {
@@ -93,10 +86,5 @@ public class Sala {
             }
         }
         return disponibles;
-    }
-
-    @Override
-    public String toString() {
-        return "Sala " + numero + " (" + coleccionAsientos + " - Cap: " + capacidad + " - " + estado + ")";
     }
 }

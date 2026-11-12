@@ -46,17 +46,16 @@ public class Asiento {
         this.estado = estado;
     }
 
-    public boolean estaDisponible() {
-        return this.estado == EstadoAsiento.DISPONIBLE;
-    }
-
-    public String getIdentificador() {
+    public String obtenerPuesto() {
         return fila + numero; // Ejemplo: "A1", "B3"
     }
 
     @Override
     public String toString() {
-        return getIdentificador() + " (" + estado + ")";
+        return "Asiento: " +
+                ", Código: " + codigo +
+                ", Puesto: " + obtenerPuesto()+
+                ", Estado: " + estado;
     }
 }
 

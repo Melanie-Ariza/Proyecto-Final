@@ -1,6 +1,4 @@
 package uniquindio.edu.co.proyectofinal.model;
-
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -12,20 +10,17 @@ public class Venta {
     private LocalDateTime fechaHoraVenta;
     private double valorPagado;
     private EstadoVenta estado;
+    private Vendedor vendedor;
 
-    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, double valorPagado) {
-        if (asiento == null || !asiento.estaDisponible()) {
-            
-        }
+    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, LocalDateTime fechaHoraVenta, double valorPagado, EstadoVenta estado, Vendedor vendedor) {
         this.codigo = codigo;
         this.cliente = cliente;
         this.funcion = funcion;
         this.asiento = asiento;
-        this.fechaHoraVenta = LocalDateTime.now();
+        this.fechaHoraVenta = fechaHoraVenta;
         this.valorPagado = valorPagado;
-        this.estado = EstadoVenta.ACTIVA;
-
-        this.asiento.setEstado(EstadoAsiento.OCUPADO);
+        this.estado = estado;
+        this.vendedor = vendedor;
     }
 
     public void cancelarVenta() {
