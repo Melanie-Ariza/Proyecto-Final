@@ -83,10 +83,20 @@ public class Sala {
         int sillasPorFila = 10;
         int contadorCodigo = 1;
 
-        for (int i = 0; i <= capacidad; i++) {
-            char letraFila = (char) ('A' + (i / sillasPorFila));
-            int numeroSilla = (i % sillasPorFila) + 1;
-            listaAsientos.add(new Asiento(contadorCodigo++, String.valueOf(letraFila), numeroSilla, EstadoAsiento.DISPONIBLE));
+        // Calculamos el total de filas necesarias según la capacidad
+        int filas = (int) Math.ceil((double) capacidad / sillasPorFila);
+        int asientosCreados = 0;
+
+        for (int i = 0; i < filas; i++) {
+            // Determinamos la letra de la fila
+            char letraFila = (char) ('A' + i);
+            String nombreFila = String.valueOf(letraFila);
+
+            for (int j = 1; j <= sillasPorFila && asientosCreados < capacidad; j++) {
+                int numeroSilla = j;
+                listaAsientos.add(new Asiento(contadorCodigo++, nombreFila, numeroSilla, EstadoAsiento.DISPONIBLE));
+                asientosCreados++;
+            }
         }
     }
 
