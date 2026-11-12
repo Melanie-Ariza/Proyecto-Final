@@ -78,6 +78,31 @@ public class Sala {
                 ", Lista asientos: " + listaAsientos;
     }
 
+    // ==========================================
+    // 1. GESTIÓN DE ASIENTOS (CRUD)
+    // ==========================================
+
+
+    public Asiento consultarAsiento(int codigo) {
+        Asiento asiento0= null;
+        for (Asiento asiento : listaAsientos) {
+            if (asiento.getCodigo() == codigo){
+                asiento0=asiento;
+            }
+        }
+        return asiento0;
+    }
+
+    public boolean ocuparAsiento(int codigo) {
+        boolean ocupado=false;
+        Asiento asiento= consultarAsiento(codigo);
+        if (asiento != null) {
+            asiento.setEstado(EstadoAsiento.OCUPADO);
+            ocupado=true;
+        }
+        return ocupado;
+    }
+
     public void generarAsientos() {
         listaAsientos.clear();
         int sillasPorFila = 10;
