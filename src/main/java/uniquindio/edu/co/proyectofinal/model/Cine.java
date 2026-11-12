@@ -8,12 +8,16 @@ public class Cine {
     private String nombre;
     private List<Pelicula> listaPeliculas;
     private List<Persona> listaPersonas;
+    private List<Funcion> listaFunciones;
+    private List<Sala> listaSalas;
 
     public Cine(int codigo, String nombre) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.listaPeliculas = new ArrayList<>();
         this.listaPersonas = new ArrayList<>();
+        this.listaFunciones = new ArrayList<>();
+        this.listaSalas = new ArrayList<>();
     }
 
     public int getCodigo() {
@@ -48,12 +52,30 @@ public class Cine {
         this.listaPersonas = listaPersonas;
     }
 
+    public List<Funcion> getListaFunciones() {
+        return listaFunciones;
+    }
+
+    public void setListaFunciones(List<Funcion> listaFunciones) {
+        this.listaFunciones = listaFunciones;
+    }
+
+    public List<Sala> getListaSalas() {
+        return listaSalas;
+    }
+
+    public void setListaSalas(List<Sala> listaSalas) {
+        this.listaSalas = listaSalas;
+    }
+
     @Override
     public String toString() {
         return "Cine\n" +
                 "Código:" + codigo +
                 ", Nombre: " + nombre +
-                ", Lista peliculas: " + listaPeliculas+
-                ", Lista Personas: "+listaPersonas;
+                ", Peliculas: " + listaPeliculas+
+                ", Personas: "+listaPersonas+
+                ", Funciones: "+listaPersonas+
+                ", Salas: "+listaPersonas;
     }
 }
