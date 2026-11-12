@@ -96,39 +96,56 @@ public class Cine {
     // 1. GESTIÓN DE PELÍCULAS (CRUD)
     // ==========================================
 
-    public boolean registrarPelicula(int codigo, String nombre, String genero, int duracion, String estado, Clasificacion clasificacion) {
-        if (consultarPelicula(codigo) != null) return false;
-        Pelicula nuevaPelicula = new Pelicula(codigo, nombre, genero, duracion, estado, new ArrayList<>(), clasificacion);
-        this.listaPeliculas.add(nuevaPelicula);
-        return true;
+    public boolean verificarPelicula(int codigo) {
+        boolean existe = false;
+        for (Pelicula pelicula : listaPeliculas) {
+            if (pelicula.getCodigo() == codigo) {
+                existe = true;
+            }
+        }
+        return existe;
+    }
+
+    public boolean registrarPelicula(Pelicula pelicula) {
+        boolean agregada= false;
+        if (verificarPelicula(pelicula.getCodigo())){
+            listaPeliculas.add(pelicula);
+            agregada= true;
+        }
+        return agregada;
     }
 
     public Pelicula consultarPelicula(int codigo) {
-        for (Pelicula p : this.listaPeliculas) {
-            if (p.getCodigo() == codigo) return p;
+        Pelicula pelicula0= null;
+        for (Pelicula pelicula : listaPeliculas) {
+            if (pelicula.getCodigo() == codigo){
+                pelicula0=pelicula;
+            }
         }
-        return null;
+        return pelicula0;
     }
 
-    public boolean modificarPelicula(int codigo, String nuevoNombre, String nuevoGenero, int nuevaDuracion, String nuevoEstado) {
-        Pelicula p = consultarPelicula(codigo);
-        if (p != null) {
-            p.setNombre(nuevoNombre);
-            p.setGenero(nuevoGenero);
-            p.setDuracion(nuevaDuracion);
-            p.setEstado(nuevoEstado);
-            return true;
+    public boolean modificarPelicula(int codigo,Pelicula peliculaActualizada) {
+        boolean estaActualizada= false;
+        Pelicula pelicula = consultarPelicula(codigo);
+        if (pelicula != null) {
+            pelicula.setNombre(peliculaActualizada.getNombre());
+            pelicula.setGenero(peliculaActualizada.getGenero());
+            pelicula.setDuracion(peliculaActualizada.getDuracion());
+            pelicula.setEstado(peliculaActualizada.getEstado());
+            estaActualizada= true;
         }
-        return false;
+        return estaActualizada;
     }
 
     public boolean deshabilitarPelicula(int codigo) {
-        Pelicula p = consultarPelicula(codigo);
-        if (p != null) {
-            p.setEstado("INACTIVO");
-            return true;
+        boolean deshabilitada=false;
+        Pelicula pelicula= consultarPelicula(codigo);
+        if (pelicula != null) {
+            pelicula.setEstado("INACTIVO");
+            deshabilitada=true;
         }
-        return false;
+        return deshabilitada;
     }
 
     // ==========================================
