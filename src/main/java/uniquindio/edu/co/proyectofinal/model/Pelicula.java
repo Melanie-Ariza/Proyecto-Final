@@ -10,14 +10,16 @@ public class Pelicula {
     private int duracion;
     private String estado;
     private List<Funcion> listaFunciones;
+    private Clasificacion clasificacion;
 
-    public Pelicula(int codigo, String nombre, String genero, int duracion, String estado, List<Funcion> listaFunciones) {
+    public Pelicula(int codigo, String nombre, String genero, int duracion, String estado, List<Funcion> listaFunciones, Clasificacion clasificacion) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.genero = genero;
         this.duracion = duracion;
         this.estado = estado;
         this.listaFunciones = new ArrayList<>();
+        this.clasificacion = clasificacion;
     }
 
     public int getCodigo() {
@@ -78,4 +80,5 @@ public class Pelicula {
                 ", estado: " + estado +
                 ", listaFunciones: " + listaFunciones;
     }
+
 }

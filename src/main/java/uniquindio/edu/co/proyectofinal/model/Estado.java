@@ -1,6 +1,6 @@
 package uniquindio.edu.co.proyectofinal.model;
 
-public enum Estado {
+public enum EstadoVenta {
     ACTIVA,
     CANCELADA
 }

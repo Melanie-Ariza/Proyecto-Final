@@ -9,23 +9,23 @@ public class Venta {
     private Asiento asiento;
     private LocalDateTime fechaHoraVenta;
     private double valorPagado;
-    private EstadoVenta estado;
+    private EstadoVenta estadoVenta;
     private Vendedor vendedor;
 
-    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, LocalDateTime fechaHoraVenta, double valorPagado, EstadoVenta estado, Vendedor vendedor) {
+    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, LocalDateTime fechaHoraVenta, double valorPagado, EstadoVenta estadoVenta, Vendedor vendedor) {
         this.codigo = codigo;
         this.cliente = cliente;
         this.funcion = funcion;
         this.asiento = asiento;
         this.fechaHoraVenta = fechaHoraVenta;
         this.valorPagado = valorPagado;
-        this.estado = estado;
+        this.estadoVenta = estadoVenta;
         this.vendedor = vendedor;
     }
 
     public void cancelarVenta() {
-        if (this.estado == EstadoVenta.ACTIVA) {
-            this.estado = EstadoVenta.CANCELADA;
+        if (this.estadoVenta == EstadoVenta.ACTIVA) {
+            this.estadoVenta = EstadoVenta.CANCELADA;
             if (this.asiento != null) {
                 this.asiento.setEstado(EstadoAsiento.DISPONIBLE);
             }
@@ -80,22 +80,23 @@ public class Venta {
         this.valorPagado = valorPagado;
     }
 
-    public EstadoVenta getEstado() {
-        return estado;
+    public EstadoVenta getEstadoVenta() {
+        return estadoVenta;
     }
 
-    public void setEstado(EstadoVenta estado) {
-        this.estado = estado;
+    public void setEstadoVenta(EstadoVenta estado) {
+        this.estadoVenta = estado;
     }
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return "Venta #" + codigo +
-                " | Cliente: " + (cliente != null ? cliente.getNombre() : "N/A") +
-                " | Asiento: " + (asiento != null ? asiento.getIdentificador() : "N/A") +
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return "Venta: \n" +
+                " | Código: "+codigo +
+                " | Cliente: " + cliente +
+                " | Asiento: " + asiento.obtenerPuesto() +
                 " | Valor: $" + valorPagado +
-                " | Fecha: " + fechaHoraVenta.format(formatter) +
-                " | Estado: " + estado;
+                " | Fecha: " + fechaHoraVenta.format(formato) +
+                " | Estado: " + estadoVenta;
     }
 }
