@@ -1,5 +1,6 @@
 package uniquindio.edu.co.proyectofinal.model;
 
+import javax.xml.parsers.SAXParser;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -95,20 +96,9 @@ public class Cine {
     // ==========================================
     // 1. GESTIÓN DE PELÍCULAS (CRUD)
     // ==========================================
-
-    public boolean verificarPelicula(int codigo) {
-        boolean existe = false;
-        for (Pelicula pelicula : listaPeliculas) {
-            if (pelicula.getCodigo() == codigo) {
-                existe = true;
-            }
-        }
-        return existe;
-    }
-
     public boolean registrarPelicula(Pelicula pelicula) {
         boolean agregada= false;
-        if (verificarPelicula(pelicula.getCodigo())){
+        if (consultarPelicula(pelicula.getCodigo()) != null){
             listaPeliculas.add(pelicula);
             agregada= true;
         }
@@ -125,7 +115,7 @@ public class Cine {
         return pelicula0;
     }
 
-    public boolean modificarPelicula(int codigo,Pelicula peliculaActualizada) {
+    public boolean modificarPelicula(int codigo, Pelicula peliculaActualizada) {
         boolean estaActualizada= false;
         Pelicula pelicula = consultarPelicula(codigo);
         if (pelicula != null) {
@@ -152,42 +142,97 @@ public class Cine {
     // 2. GESTIÓN DE SALAS (CRUD)
     // ==========================================
 
-    public boolean registrarSala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
-        if (consultarSala(numero) != null) return false;
-        Sala nuevaSala = new Sala(codigo, numero, capacidad, estado, coleccionAsientos);
-        this.listaSalas.add(nuevaSala);
-        return true;
+    public boolean registrarSala(Sala sala) {
+        boolean agregada= false;
+        if (consultarSala(sala.getNumero()) !=null){
+            listaSalas.add(sala);
+            agregada= true;
+        }
+        return agregada;
     }
 
-    public Sala consultarSala(int numeroSala) {
-        for (Sala s : this.listaSalas) {
-            if (s.getNumero() == numeroSala) return s;
+    public Sala consultarSala(int numero) {
+        Sala sala0= null;
+        for (Sala sala : listaSalas) {
+            if (sala.getCodigo() == codigo){
+                sala0=sala;
+            }
         }
-        return null;
+        return sala0;
     }
 
-    public boolean modificarSala(int numeroSala, int nuevaCapacidad, EstadoSala nuevoEstado, ColeccionAsientos nuevaColeccionAsientos) {
-        Sala s = consultarSala(numeroSala);
-        if (s != null) {
-            s.setCapacidad(nuevaCapacidad); // Esto regenera automáticamente los asientos gracias al método de la clase Sala
-            s.setEstado(nuevoEstado);
-            s.setColeccionAsientos(nuevaColeccionAsientos);
-            return true;
+    public boolean modificarSala(int numero, Sala salaActualizada) {
+        boolean estaActualizada= false;
+        Sala sala = consultarSala(codigo);
+        if (sala != null) {
+            sala.setCapacidad(salaActualizada.getCapacidad());
+            sala.setEstado(salaActualizada.getEstado());
+            sala.setColeccionAsientos(salaActualizada.getColeccionAsientos());
+            estaActualizada= true;
         }
-        return false;
+        return estaActualizada;
     }
 
-    public boolean deshabilitarSala(int numeroSala) {
-        Sala s = consultarSala(numeroSala);
-        if (s != null) {
-            s.setEstado(EstadoSala.FUERA_DE_SERVICIO); // Usando el enum correspondiente
-            return true;
+    public boolean deshabilitarSala(int numero) {
+        boolean deshabilitada=false;
+        Sala sala= consultarSala(numero);
+        if (sala != null) {
+            sala.setEstado(EstadoSala.FUERA_DE_SERVICIO);
+            deshabilitada=true;
         }
-        return false;
+        return deshabilitada;
     }
 
     // ==========================================
-    // 3. PROGRAMAR Y GESTIONAR FUNCIONES
+    // 3. GESTIÓN DE FUNCIONES (CRUD)
+    // ==========================================
+    public boolean programarFuncion(Pelicula pelicula, Funcion nuevaFuncion) {
+        boolean programada= false;
+        if (consultarFuncion(codigo) != null && pelicula != null){
+            listaFunciones.add(nuevaFuncion);
+            pelicula.getListaFunciones().add(nuevaFuncion);
+            programada=true;
+        }
+        return programada;
+    }
+
+    public Funcion consultarFuncion(int codigo) {
+        Funcion funcion0= null;
+        for (Funcion funcion : listaFunciones) {
+            if (funcion.getCodigo() == codigo){
+                funcion0=funcion;
+            }
+        }
+        return funcion0;
+    }
+
+    public boolean modificarFuncion(int codigo, Funcion funcionActualizada) {
+        boolean estaActualizada= false;
+        Funcion funcion = consultarFuncion(codigo);
+        if (funcion != null) {
+            funcion.setPelicula(funcionActualizada.getPelicula());
+            funcion.setSala(funcionActualizada.getSala());
+            funcion.setFecha(funcionActualizada.getFecha());
+            funcion.setHora(funcionActualizada.getHora());
+            funcion.setEstadoFuncion(funcionActualizada.getEstadoFuncion());
+            estaActualizada= true;
+        }
+        return estaActualizada;
+    }
+
+    public boolean deshabilitarFuncion(int codigo) {
+        boolean deshabilitada=false;
+        Funcion funcion= consultarFuncion(codigo);
+        if (funcion != null) {
+            funcion.setEstadoFuncion(EstadoFuncion.CANCELADA);
+            deshabilitada=true;
+        }
+        return deshabilitada;
+    }
+
+
+    // ==========================================
+    // 4. PROGRAMAR Y GESTIONAR FUNCIONES
     // ==========================================
 
     public boolean programarFuncion(int codigo, Pelicula pelicula, Sala sala, LocalTime hora, LocalDate fecha, double valorBase, EstadoFuncion estadoFuncion) {
@@ -197,13 +242,6 @@ public class Cine {
         this.listaFunciones.add(nuevaFuncion);
         pelicula.getListaFunciones().add(nuevaFuncion); // Añade la función a la lista interna de la película
         return true;
-    }
-
-    public Funcion consultarFuncion(int codigoFuncion) {
-        for (Funcion f : this.listaFunciones) {
-            if (f.getCodigo() == codigoFuncion) return f;
-        }
-        return null;
     }
 
     // ==========================================
