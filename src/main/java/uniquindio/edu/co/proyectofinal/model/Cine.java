@@ -165,11 +165,12 @@ public class Cine {
         return agregada;
     }
 
-    public Sala consultarSala(int numero) {
-        Sala sala0= null;
+    public Sala consultarSala(int identificador) {
+        Sala sala0 = null;
         for (Sala sala : listaSalas) {
-            if (sala.getCodigo() == numero){
-                sala0=sala;
+            if (sala.getCodigo() == identificador || sala.getNumero() == identificador) {
+                sala0 = sala;
+                break;
             }
         }
         return sala0;

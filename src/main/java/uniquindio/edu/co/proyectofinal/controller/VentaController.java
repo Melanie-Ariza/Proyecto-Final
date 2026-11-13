@@ -4,7 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import uniquindio.edu.co.proyectofinal.model.*;
 
@@ -12,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class VentaController {
 
@@ -38,8 +42,41 @@ public class VentaController {
         cmbTipoEntrada.getItems().setAll(TipoEntrada.values());
         cmbTipoEntrada.setValue(TipoEntrada.GENERAL);
 
-        // Formato para mostrar cada Funcion en el ComboBox
-        cmbFuncion.setConverter(new StringConverter<>() {
+        // --- SOLUCIÓN ROBUSTA PARA EL COMBOBOX DE ASIENTOS ---
+        Callback<ListView<Asiento>, ListCell<Asiento>> asientoFactory = new Callback<ListView<Asiento>, ListCell<Asiento>>() {
+            @Override
+            public ListCell<Asiento> call(ListView<Asiento> param) {
+                return new ListCell<Asiento>() {
+                    @Override
+                    protected void updateItem(Asiento asiento, boolean empty) {
+                        super.updateItem(asiento, empty);
+                        if (empty || asiento == null) {
+                            setText(null);
+                        } else {
+                            setText("Puesto " + asiento.obtenerPuesto());
+                        }
+                    }
+                };
+            }
+        };
+
+        cmbAsiento.setCellFactory(asientoFactory);
+        cmbAsiento.setButtonCell(asientoFactory.call(null));
+
+        // Convertidor de respaldo para seguridad de tipos
+        cmbAsiento.setConverter(new StringConverter<Asiento>() {
+            @Override
+            public String toString(Asiento a) {
+                return (a == null) ? "" : "Puesto " + a.obtenerPuesto();
+            }
+            @Override
+            public Asiento fromString(String s) {
+                return null;
+            }
+        });
+
+        // Formato para mostrar cada Función en el ComboBox
+        cmbFuncion.setConverter(new StringConverter<Funcion>() {
             @Override
             public String toString(Funcion f) {
                 if (f == null) return "";
@@ -47,32 +84,26 @@ public class VentaController {
                         + " (" + f.getSala().getColeccionAsientos() + ") - " + f.getHora();
             }
             @Override
-            public Funcion fromString(String s) { return null; }
-        });
-
-        // Formato para mostrar cada Asiento A1, A2
-        cmbAsiento.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Asiento a) {
-                return (a == null) ? "" : "Puesto " + a.obtenerPuesto();
+            public Funcion fromString(String s) {
+                return null;
             }
-            @Override
-            public Asiento fromString(String s) { return null; }
         });
     }
 
     private void cargarDatosInicialesSiVacio() {
         this.vendedorActivo = new Vendedor(1001, "Taquillero UQ", Cargo.OPERADOR.getSalario(), Cargo.OPERADOR);
 
-        //prueba para poder vender ya
+        // Datos de prueba iniciales si el cine está vacío
         if (cine.getListaFunciones().isEmpty()) {
             Sala sala1 = new Sala(1, 1, 20, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
             Sala salaVip = new Sala(2, 2, 15, EstadoSala.DISPONIBLE, ColeccionAsientos.VIP);
             cine.registrarSala(sala1);
             cine.registrarSala(salaVip);
 
-            Pelicula peli1 = new Pelicula(101, "Rocky", "Drama / Acción", 130, "ACTIVO", new ArrayList<>(), Clasificacion.MAYORES_12);
-            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS);
+            // Usamos el constructor original de Pelicula con sus parámetros
+            Pelicula peli1 = new Pelicula(101, "Rocky", "Drama / Acción", 130, "ACTIVO", new ArrayList<>(), Clasificacion.MAYORES_12, "/uniquindio/edu/co/proyectofinal/images/rocky.jpg");
+            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS,"/uniquindio/edu/co/proyectofinal/images/encanto.gif");
+
             cine.registrarPelicula(peli1);
             cine.registrarPelicula(peli2);
 
@@ -96,11 +127,19 @@ public class VentaController {
     void alSeleccionarFuncion(ActionEvent event) {
         Funcion funcion = cmbFuncion.getValue();
         cmbAsiento.getItems().clear();
-        if (funcion != null && funcion.getSala() != null) {
-            for (Asiento a : funcion.getSala().getListaAsientos()) {
-                if (a.getEstado() == EstadoAsiento.DISPONIBLE) {
-                    cmbAsiento.getItems().add(a);
+
+        if (funcion != null) {
+            Sala sala = funcion.getSala();
+            if (sala != null) {
+                List<Asiento> asientosDisponibles = new ArrayList<>();
+                for (Asiento a : sala.getListaAsientos()) {
+                    if (a.getEstado() == EstadoAsiento.DISPONIBLE) {
+                        asientosDisponibles.add(a);
+                    }
                 }
+
+                // Actualizamos el ComboBox de golpe con setAll para refrescar la vista
+                cmbAsiento.getItems().setAll(asientosDisponibles);
             }
         }
         actualizarPrecioEstimado(null);

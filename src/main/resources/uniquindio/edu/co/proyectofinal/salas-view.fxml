@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox spacing="25.0" style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.controller.SalasController">
+    <padding>
+        <Insets bottom="30.0" left="35.0" right="35.0" top="30.0" />
+    </padding>
+    <children>
+        <!-- Panel Izquierdo: Lista de Salas -->
+        <VBox spacing="15.0" prefWidth="280.0">
+            <children>
+                <Label text="SALAS DISPONIBLES" textFill="#222222">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <ListView fx:id="listSalas" prefHeight="400.0" style="-fx-background-radius: 6;" />
+            </children>
+        </VBox>
+
+        <!-- Panel Derecho: Representación Gráfica de Asientos tipo Cine -->
+        <VBox alignment="TOP_CENTER" spacing="15.0" HBox.hgrow="ALWAYS" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <Label fx:id="lblTituloSala" text="Selecciona una sala para ver su distribución" textFill="#C8102E">
+                    <font>
+                        <Font name="System Bold" size="15.0" />
+                    </font>
+                </Label>
+
+                <!-- Pantalla de cine simulada -->
+                <Pane prefHeight="25.5" prefWidth="450.0" style="-fx-background-color: #1C1C1C; -fx-background-radius: 3;" />
+                <Label text="PANTALLA" textFill="#888888">
+                    <font>
+                        <Font name="System Bold" size="10.0" />
+                    </font>
+                </Label>
+
+                <Separator prefWidth="200.0" />
+
+                <!-- Cuadrícula Gráfica de Asientos -->
+                <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                    <content>
+                        <GridPane fx:id="gridAsientos" alignment="CENTER" hgap="10.0" vgap="10.0">
+                            <padding>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </padding>
+                        </GridPane>
+                    </content>
+                </ScrollPane>
+
+                <!-- Leyenda de colores -->
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <HBox alignment="CENTER" spacing="5.0">
+                            <children>
+                                <Pane prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: #2ECC71; -fx-background-radius: 3;" />
+                                <Label text="Disponible" textFill="#444444" />
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" spacing="5.0">
+                            <children>
+                                <Pane prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 3;" />
+                                <Label text="Ocupado" textFill="#444444" />
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</HBox>

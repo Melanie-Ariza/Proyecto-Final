@@ -11,14 +11,32 @@ public class Pelicula {
     private String estado;
     private List<Funcion> listaFunciones;
     private Clasificacion clasificacion;
+    private String imagenRuta;
 
-    public Pelicula(int codigo, String nombre, String genero, int duracion, String estado, List<Funcion> listaFunciones, Clasificacion clasificacion) {
+    public Pelicula(int codigo, String nombre, String genero, int duracion, String estado, List<Funcion> listaFunciones, Clasificacion clasificacion, String imagenRuta) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.genero = genero;
         this.duracion = duracion;
         this.estado = estado;
         this.listaFunciones = new ArrayList<>();
+        this.clasificacion = clasificacion;
+        this.imagenRuta = imagenRuta;
+    }
+
+    public String getImagenRuta() {
+        return imagenRuta;
+    }
+
+    public void setImagenRuta(String imagenRuta) {
+        this.imagenRuta = imagenRuta;
+    }
+
+    public Clasificacion getClasificacion() {
+        return clasificacion;
+    }
+
+    public void setClasificacion(Clasificacion clasificacion) {
         this.clasificacion = clasificacion;
     }
 
@@ -78,7 +96,8 @@ public class Pelicula {
                 ", genero: " + genero +
                 ", duracion: " + duracion +
                 ", estado: " + estado +
-                ", listaFunciones: " + listaFunciones;
+                ", listaFunciones: " + listaFunciones+
+                ", clasificacion: " + clasificacion;
     }
 
 }
