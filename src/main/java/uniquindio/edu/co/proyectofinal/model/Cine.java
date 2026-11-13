@@ -6,9 +6,11 @@ import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.Pe
 import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Cine {
     private int codigo;
@@ -243,9 +245,145 @@ public class Cine {
         }
         return deshabilitada;
     }
+    // ==========================================
+    // 4. GESTION DE VENTAS
+    // ==========================================
+
+    // Calcula el valor total multiplicando la tarifa del TipoCliente por la cantidad de boletas y el valor del asiento
+    public double calcularValorTotal(Cliente cliente, int cantidad, Funcion funcion) {
+        double total = 0.0;
+        if (cliente != null && cliente.getTipoCliente() != null && cantidad > 0) {
+
+            // Tarifa base según el tipo de cliente + recargo del asiento seleccionado
+            double tarifaUnitaria = cliente.getTipoCliente().getValorEntrada();
+            double recargoAsiento = funcion.sala.getColeccionAsientos().getValorAsiento();
+
+            double subtotalPorBoleta = tarifaUnitaria + recargoAsiento;
+            total = subtotalPorBoleta * cantidad;
+
+            // Si el cliente también es vendedor (ClienteVendedor), se aplica su descuento
+            if (cliente instanceof IVendedor) {
+                total -= ((IVendedor) cliente).calcularDescuento();
+            }
+        }
+        return total;
+    }
+
+    public void cancelarVenta(Venta venta) {
+        if (venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
+            EstadoVenta estadoVenta = EstadoVenta.CANCELADA;
+            if (venta.getAsiento() != null) {
+                venta.getAsiento().setEstado(EstadoAsiento.DISPONIBLE);
+            }
+        }
+    }
+
+    public void comenzarVenta(Cliente cliente, Vendedor vendedor) {
+        Scanner sc = new Scanner(System.in);
+        int opcion = 1;
+        //Generar un código automatico
+        int codigo= listaVentas.getLast().getCodigo()+1;
+        if (listaVentas== null || listaVentas.isEmpty()){
+            codigo= 1;
+        }
+
+        //Mostrar funciones disponibles
+        System.out.println("\n--- FUNCIONES DISPONIBLES ---");
+        boolean hayFunciones = false;
+        for (Funcion funcion : listaFunciones) {
+            if (funcion.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
+                System.out.println(funcion);
+                hayFunciones = true;
+            }
+        }
+        if (!hayFunciones) {
+            System.out.println("No hay funciones programadas en este momento.");
+            return;
+        }
+
+        //Seleccionar una funcion
+        System.out.println("\n Ingrese código de la función seleccionada: ");
+        int codigoFuncion= sc.nextInt();
+
+        Funcion funcionSeleccionada = consultarFuncion(codigoFuncion);
+        if (funcionSeleccionada == null) {
+            System.out.println("Error: La función ingresada no existe.");
+            return;
+        }
+
+        //Preguntar por cantidad de entradas
+        System.out.println("¿Cuántas entradas desea?: ");
+        int cantidad= sc.nextInt();
+        sc.nextLine();
+
+        for (int i = 0; i < cantidad; i++) {
+            System.out.println("\n--- ENTRADA " + (i + 1) + " de " + cantidad + " ---");
+
+            // Mostrar asientos disponibles de la sala de esa función
+            System.out.println("Asientos disponibles:");
+            funcionSeleccionada.getSala().getListaAsientos().forEach(asiento -> {
+                if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
+                    System.out.print("[" + asiento.obtenerPuesto() + "]");
+                }
+            });
+            System.out.println();
+
+            System.out.print("Ingrese el puesto del asiento que desea (Ej: A1, B5): ");
+            String codigoAsiento = sc.nextLine();
+
+            // Buscar el asiento en la función/sala
+            Asiento asientoSeleccionado = funcionSeleccionada.getSala().consultarAsientoPorPuesto(codigoAsiento);
+            if (asientoSeleccionado == null) {
+                System.out.println("Error: El asiento no existe.");
+                break;
+            }
+
+            // Validar si está disponible
+            if (asientoSeleccionado.getEstado() != EstadoAsiento.DISPONIBLE) {
+                System.out.println("Error: El asiento ya se encuentra ocupado.");
+                break;
+            }
+
+            // 5. Seleccionar tipo de cliente
+            System.out.println("1. GENERAL, 2. ESTUDIANTE, 3. NIÑO, 4. ADULTO MAYOR");
+            System.out.print("¿Qué tipo de entrada es?: ");
+            int numeroTipoCliente = sc.nextInt();
+
+            TipoCliente tipoClienteEntrada;
+            if (numeroTipoCliente == 1) {
+                tipoClienteEntrada = TipoCliente.GENERAL;
+            } else if (numeroTipoCliente == 2) {
+                tipoClienteEntrada = TipoCliente.ESTUDIANTE;
+            } else if (numeroTipoCliente == 3) {
+                tipoClienteEntrada = TipoCliente.NINIO;
+            } else if (numeroTipoCliente == 4) {
+                tipoClienteEntrada = TipoCliente.ADULTO_MAYOR;
+            } else {
+                System.out.println("Elección no válida. Se asignará GENERAL por defecto.");
+                tipoClienteEntrada = TipoCliente.GENERAL;
+            }
+
+            // 6. Calcular el valor a pagar
+            double valorTotal= calcularValorTotal(cliente, cantidad, funcionSeleccionada);
+
+            // 7. Crear la venta y registrarla
+            LocalDateTime fechaHoraVenta = LocalDateTime.now();
+
+            Venta nuevaVenta = new Venta(codigo, cliente, funcionSeleccionada, asientoSeleccionado,fechaHoraVenta, EstadoVenta.ACTIVA, vendedor, cantidad);
+
+            // Cambiar estado del asiento a ocupado
+            asientoSeleccionado.setEstado(EstadoAsiento.OCUPADO);
+
+            // Guardar la venta en la lista general del cine/sistema
+            listaVentas.add(nuevaVenta);
+
+            System.out.println("¡Entrada agregada y venta registrada con éxito! Código: " + codigo);
+        }
+
+    }
 
     // ==========================================
-    // 4. CONSULTAS ESPECÍFICAS SOLICITADAS
+    // 5. CONSULTAS ESPECÍFICAS SOLICITADAS
     // ==========================================
 
     // Consultar películas disponibles

@@ -95,6 +95,16 @@ public class Sala {
         return asiento0;
     }
 
+    public Asiento consultarAsientoPorPuesto(String puesto) {
+        Asiento asiento0= null;
+        for (Asiento asiento : listaAsientos) {
+            if (asiento.obtenerPuesto().equalsIgnoreCase(puesto)){
+                asiento0=asiento;
+            }
+        }
+        return asiento0;
+    }
+
     public boolean ocuparAsiento(int codigo) {
         boolean ocupado=false;
         Asiento asiento= consultarAsiento(codigo);
