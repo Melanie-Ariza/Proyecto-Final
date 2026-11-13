@@ -2,8 +2,8 @@ package uniquindio.edu.co.proyectofinal.model;
 
 public class ClienteVendedor extends  Cliente implements IVendedor{
     Cargo cargo;
-    public ClienteVendedor(int documento, String nombre, TipoCliente tipoCliente) {
-        super(documento, nombre, tipoCliente);
+    public ClienteVendedor(int documento, String nombre, TipoEntrada tipoEntrada) {
+        super(documento, nombre);
     }
 
     public Cargo getCargo() {

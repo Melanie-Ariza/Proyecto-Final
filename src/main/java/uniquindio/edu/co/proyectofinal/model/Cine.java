@@ -168,7 +168,7 @@ public class Cine {
     public Sala consultarSala(int numero) {
         Sala sala0= null;
         for (Sala sala : listaSalas) {
-            if (sala.getCodigo() == codigo){
+            if (sala.getCodigo() == numero){
                 sala0=sala;
             }
         }
@@ -177,7 +177,7 @@ public class Cine {
 
     public boolean modificarSala(int numero, Sala salaActualizada) {
         boolean estaActualizada= false;
-        Sala sala = consultarSala(codigo);
+        Sala sala = consultarSala(numero);
         if (sala != null) {
             sala.setCapacidad(salaActualizada.getCapacidad());
             sala.setEstado(salaActualizada.getEstado());
