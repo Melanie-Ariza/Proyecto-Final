@@ -11,16 +11,33 @@ public class Venta {
     private double valorPagado;
     private EstadoVenta estadoVenta;
     private Vendedor vendedor;
+    private int cantidad;
 
-    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, LocalDateTime fechaHoraVenta, double valorPagado, EstadoVenta estadoVenta, Vendedor vendedor) {
+    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, LocalDateTime fechaHoraVenta, EstadoVenta estadoVenta, Vendedor vendedor, int cantidad) {
         this.codigo = codigo;
         this.cliente = cliente;
         this.funcion = funcion;
         this.asiento = asiento;
         this.fechaHoraVenta = fechaHoraVenta;
-        this.valorPagado = valorPagado;
         this.estadoVenta = estadoVenta;
         this.vendedor = vendedor;
+        this.cantidad = cantidad;
+        this.valorPagado = calcularValorTotal();
+    }
+
+    // Calcula el valor total multiplicando la tarifa del TipoCliente por la cantidad de boletas
+    public double calcularValorTotal() {
+        double total = 0.0;
+        if (cliente != null && cliente.getTipoCliente() != null && cantidad > 0) {
+            double tarifaUnitaria = cliente.getTipoCliente().getValorEntrada();
+            total = tarifaUnitaria * cantidad;
+
+            // Si el cliente también es vendedor (ClienteVendedor), se aplica su descuento
+            if (cliente instanceof IVendedor) {
+                total -= ((IVendedor) cliente).calcularDescuento();
+            }
+        }
+        return total;
     }
 
     public void cancelarVenta() {
@@ -84,17 +101,35 @@ public class Venta {
         return estadoVenta;
     }
 
-    public void setEstadoVenta(EstadoVenta estado) {
-        this.estadoVenta = estado;
+    public void setEstadoVenta(EstadoVenta estadoVenta) {
+        this.estadoVenta = estadoVenta;
+    }
+
+    public Vendedor getVendedor() {
+        return vendedor;
+    }
+
+    public void setVendedor(Vendedor vendedor) {
+        this.vendedor = vendedor;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+        this.valorPagado = calcularValorTotal();
     }
 
     @Override
     public String toString() {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return "Venta: \n" +
-                " | Código: "+codigo +
+                " | Código: " + codigo +
                 " | Cliente: " + cliente +
-                " | Asiento: " + asiento.obtenerPuesto() +
+                " | Asiento: " + (asiento != null ? asiento.obtenerPuesto() : "N/A") +
+                " | Cantidad: " + cantidad +
                 " | Valor: $" + valorPagado +
                 " | Fecha: " + fechaHoraVenta.format(formato) +
                 " | Estado: " + estadoVenta;
