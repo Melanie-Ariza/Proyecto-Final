@@ -9,4 +9,6 @@ module uniquindio.edu.co.proyectofinal {
     exports uniquindio.edu.co.proyectofinal.controller;
     exports uniquindio.edu.co.proyectofinal.model;
     exports uniquindio.edu.co.proyectofinal.viewController;
+    exports uniquindio.edu.co.proyectofinal;
+    opens uniquindio.edu.co.proyectofinal to javafx.fxml;
 }
