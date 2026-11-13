@@ -48,7 +48,7 @@ public class SalasController {
 
         int columna = 0;
         int fila = 0;
-        int maxColumnas = 5; // Cantidad de asientos por fila en la interfaz gráfica
+        int maxColumnas = 10; // Cantidad de asientos por fila en la interfaz gráfica
 
         for (Asiento asiento : sala.getListaAsientos()) {
             Button btnAsiento = new Button(asiento.obtenerPuesto());
