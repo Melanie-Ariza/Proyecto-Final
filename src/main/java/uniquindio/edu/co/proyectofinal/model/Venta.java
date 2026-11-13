@@ -22,31 +22,6 @@ public class Venta {
         this.estadoVenta = estadoVenta;
         this.vendedor = vendedor;
         this.cantidad = cantidad;
-        this.valorPagado = calcularValorTotal();
-    }
-
-    // Calcula el valor total multiplicando la tarifa del TipoCliente por la cantidad de boletas
-    public double calcularValorTotal() {
-        double total = 0.0;
-        if (cliente != null && cliente.getTipoCliente() != null && cantidad > 0) {
-            double tarifaUnitaria = cliente.getTipoCliente().getValorEntrada();
-            total = tarifaUnitaria * cantidad;
-
-            // Si el cliente también es vendedor (ClienteVendedor), se aplica su descuento
-            if (cliente instanceof IVendedor) {
-                total -= ((IVendedor) cliente).calcularDescuento();
-            }
-        }
-        return total;
-    }
-
-    public void cancelarVenta() {
-        if (this.estadoVenta == EstadoVenta.ACTIVA) {
-            this.estadoVenta = EstadoVenta.CANCELADA;
-            if (this.asiento != null) {
-                this.asiento.setEstado(EstadoAsiento.DISPONIBLE);
-            }
-        }
     }
 
     public int getCodigo() {
@@ -119,7 +94,6 @@ public class Venta {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
-        this.valorPagado = calcularValorTotal();
     }
 
     @Override
