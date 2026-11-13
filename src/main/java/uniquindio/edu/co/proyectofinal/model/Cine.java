@@ -1,9 +1,11 @@
 package uniquindio.edu.co.proyectofinal.model;
 
+import uniquindio.edu.co.proyectofinal.Excepciones.AsientoOcupadoException.AsientoOcupadoException;
 import uniquindio.edu.co.proyectofinal.Excepciones.FuncionInexistenteException.FuncionInexistenteException;
 import uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException;
 import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.PeliculaDuplicadaException;
 import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
+import uniquindio.edu.co.proyectofinal.Excepciones.VentaInexistenteException.VentaInexistenteException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -270,6 +272,9 @@ public class Cine {
     }
 
     public void cancelarVenta(Venta venta) {
+        if (venta == null) {
+            throw new VentaInexistenteException("La venta que intenta cancelar no existe en el sistema");
+        }
         if (venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
             EstadoVenta estadoVenta = EstadoVenta.CANCELADA;
             if (venta.getAsiento() != null) {
@@ -340,8 +345,7 @@ public class Cine {
 
             // Validar si está disponible
             if (asientoSeleccionado.getEstado() != EstadoAsiento.DISPONIBLE) {
-                System.out.println("Error: El asiento ya se encuentra ocupado.");
-                break;
+                throw new AsientoOcupadoException("El asiento "+codigoAsiento+" ya se encuentra ocupado.");
             }
 
             // 5. Seleccionar tipo de cliente
