@@ -10,6 +10,7 @@ public class Sala {
     private ColeccionAsientos coleccionAsientos;
     private List<Asiento> listaAsientos;
 
+
     public Sala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
         this.codigo = codigo;
         this.numero = numero;
@@ -17,6 +18,7 @@ public class Sala {
         this.estado = estado;
         this.coleccionAsientos = coleccionAsientos;
         this.listaAsientos = new ArrayList<>();
+        generarAsientos();
     }
 
     public int getCodigo() {

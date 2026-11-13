@@ -97,43 +97,44 @@ public class Cine {
     // 1. GESTIÓN DE PELÍCULAS (CRUD)
     // ==========================================
     public boolean registrarPelicula(Pelicula pelicula) {
-        boolean agregada= false;
-        if (consultarPelicula(pelicula.getCodigo()) != null){
+        boolean agregada = false;
+        if (pelicula != null && consultarPelicula(pelicula.getCodigo()) == null) {
             listaPeliculas.add(pelicula);
-            agregada= true;
+            agregada = true;
         }
         return agregada;
     }
 
     public Pelicula consultarPelicula(int codigo) {
-        Pelicula pelicula0= null;
+        Pelicula peliculaEncontrada = null;
         for (Pelicula pelicula : listaPeliculas) {
-            if (pelicula.getCodigo() == codigo){
-                pelicula0=pelicula;
+            if (pelicula.getCodigo() == codigo) {
+                peliculaEncontrada = pelicula;
+                break;
             }
         }
-        return pelicula0;
+        return peliculaEncontrada;
     }
 
     public boolean modificarPelicula(int codigo, Pelicula peliculaActualizada) {
-        boolean estaActualizada= false;
+        boolean estaActualizada = false;
         Pelicula pelicula = consultarPelicula(codigo);
-        if (pelicula != null) {
+        if (pelicula != null && peliculaActualizada != null) {
             pelicula.setNombre(peliculaActualizada.getNombre());
             pelicula.setGenero(peliculaActualizada.getGenero());
             pelicula.setDuracion(peliculaActualizada.getDuracion());
             pelicula.setEstado(peliculaActualizada.getEstado());
-            estaActualizada= true;
+            estaActualizada = true;
         }
         return estaActualizada;
     }
 
     public boolean deshabilitarPelicula(int codigo) {
-        boolean deshabilitada=false;
-        Pelicula pelicula= consultarPelicula(codigo);
+        boolean deshabilitada = false;
+        Pelicula pelicula = consultarPelicula(codigo);
         if (pelicula != null) {
-            pelicula.setEstado("INACTIVO");
-            deshabilitada=true;
+            pelicula.setEstado("NO_DISPONIBLE");
+            deshabilitada = true;
         }
         return deshabilitada;
     }
@@ -143,10 +144,10 @@ public class Cine {
     // ==========================================
 
     public boolean registrarSala(Sala sala) {
-        boolean agregada= false;
-        if (consultarSala(sala.getNumero()) !=null){
+        boolean agregada = false;
+        if (sala != null && consultarSala(sala.getCodigo()) == null) {
             listaSalas.add(sala);
-            agregada= true;
+            agregada = true;
         }
         return agregada;
     }
@@ -173,12 +174,12 @@ public class Cine {
         return estaActualizada;
     }
 
-    public boolean deshabilitarSala(int numero) {
-        boolean deshabilitada=false;
-        Sala sala= consultarSala(numero);
+    public boolean deshabilitarSala(int codigo) {
+        boolean deshabilitada = false;
+        Sala sala = consultarSala(codigo);
         if (sala != null) {
             sala.setEstado(EstadoSala.FUERA_DE_SERVICIO);
-            deshabilitada=true;
+            deshabilitada = true;
         }
         return deshabilitada;
     }
@@ -187,11 +188,13 @@ public class Cine {
     // 3. GESTIÓN DE FUNCIONES (CRUD)
     // ==========================================
     public boolean programarFuncion(Pelicula pelicula, Funcion nuevaFuncion) {
-        boolean programada= false;
-        if (consultarFuncion(codigo) != null && pelicula != null){
-            listaFunciones.add(nuevaFuncion);
-            pelicula.getListaFunciones().add(nuevaFuncion);
-            programada=true;
+        boolean programada = false;
+        if (pelicula != null && nuevaFuncion != null && consultarFuncion(nuevaFuncion.getCodigo()) == null) {
+            if (nuevaFuncion.getSala() != null && nuevaFuncion.getSala().getEstado() == EstadoSala.DISPONIBLE) {
+                listaFunciones.add(nuevaFuncion);
+                pelicula.getListaFunciones().add(nuevaFuncion);
+                programada = true;
+            }
         }
         return programada;
     }
@@ -305,6 +308,30 @@ public class Cine {
         }
         return peliculaMasVendida;
     }
+
+    // Consultar el total de entradas vendidas (solo ventas activas)
+    public int consultarTotalEntradasVendidas() {
+        int totalEntradas = 0;
+        for (Venta venta : this.listaVentas) {
+            if (venta != null && venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
+                totalEntradas++;
+            }
+        }
+        return totalEntradas;
+    }
+
+    // Consultar el total de ingresos generados (solo ventas activas)
+    public double consultarTotalIngresosGenerados() {
+        double totalIngresos = 0.0;
+        for (Venta venta : this.listaVentas) {
+            if (venta != null && venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
+                totalIngresos += venta.getValorPagado();
+            }
+        }
+        return totalIngresos;
+    }
+
+
 
 
 }
