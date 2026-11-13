@@ -362,7 +362,7 @@ public class Cine {
             } else if (numeroTipoCliente == 2) {
                 tipoEntrada = TipoEntrada.ESTUDIANTE;
             } else if (numeroTipoCliente  == 3) {
-                tipoEntrada = TipoEntrada.NINIO;
+                tipoEntrada = TipoEntrada.NIÑO;
             } else if (numeroTipoCliente == 4) {
                 tipoEntrada = TipoEntrada.ADULTO_MAYOR;
             } else {
