@@ -8,7 +8,7 @@ public enum TipoEntrada {
 
     private double valorEntrada;
 
-    TipoCliente(double valorEntrada) {
+    TipoEntrada(double valorEntrada) {
         this.valorEntrada = valorEntrada;
     }
 
