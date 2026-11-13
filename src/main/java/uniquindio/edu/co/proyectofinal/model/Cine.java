@@ -1,11 +1,9 @@
 package uniquindio.edu.co.proyectofinal.model;
 
-import uniquindio.edu.co.proyectofinal.Excepciones.AsientoOcupadoException.AsientoOcupadoException;
 import uniquindio.edu.co.proyectofinal.Excepciones.FuncionInexistenteException.FuncionInexistenteException;
 import uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException;
 import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.PeliculaDuplicadaException;
 import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
-import uniquindio.edu.co.proyectofinal.Excepciones.VentaInexistenteException.VentaInexistenteException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,11 +24,11 @@ public class Cine {
     public Cine(int codigo, String nombre) {
         this.codigo = codigo;
         this.nombre = nombre;
-        this.listaPeliculas = new ArrayList<>();
-        this.listaPersonas = new ArrayList<>();
-        this.listaFunciones = new ArrayList<>();
-        this.listaSalas = new ArrayList<>();
-        this.listaVentas = new ArrayList<>();
+        listaPeliculas = new ArrayList<>();
+        listaPersonas = new ArrayList<>();
+        listaFunciones = new ArrayList<>();
+        listaSalas = new ArrayList<>();
+        listaVentas = new ArrayList<>();
     }
 
     public List<Funcion> getListaFunciones() {
@@ -251,35 +249,37 @@ public class Cine {
     // 4. GESTION DE VENTAS
     // ==========================================
 
-    // Calcula el valor total multiplicando la tarifa del TipoCliente por la cantidad de boletas y el valor del asiento
-    public double calcularValorTotal(Cliente cliente, int cantidad, Funcion funcion) {
-        double total = 0.0;
-        if (cliente != null && cliente.getTipoCliente() != null && cantidad > 0) {
+    // Calcula el valor total
+    public double calcularValorTotal(int codigo, Persona cliente) {
+        double total = 0;
+        double subtotal= 0;
 
-            // Tarifa base según el tipo de cliente + recargo del asiento seleccionado
-            double tarifaUnitaria = cliente.getTipoCliente().getValorEntrada();
-            double recargoAsiento = funcion.sala.getColeccionAsientos().getValorAsiento();
-
-            double subtotalPorBoleta = tarifaUnitaria + recargoAsiento;
-            total = subtotalPorBoleta * cantidad;
-
-            // Si el cliente también es vendedor (ClienteVendedor), se aplica su descuento
-            if (cliente instanceof IVendedor) {
-                total -= ((IVendedor) cliente).calcularDescuento();
+        for (Venta venta: listaVentas){
+            if (venta.getCodigo()==codigo){
+                for (DetalleVenta detalle: venta.getListaDetalles()){
+                    subtotal= detalle.calcularSubtotal();
+                    total+=subtotal;
+                }
             }
+        }
+
+        if (cliente instanceof ClienteVendedor) {
+            total= total * ((ClienteVendedor) cliente).calcularDescuento();
         }
         return total;
     }
 
     public void cancelarVenta(Venta venta) {
-        if (venta == null) {
-            throw new VentaInexistenteException("La venta que intenta cancelar no existe en el sistema");
-        }
         if (venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
             EstadoVenta estadoVenta = EstadoVenta.CANCELADA;
-            if (venta.getAsiento() != null) {
-                venta.getAsiento().setEstado(EstadoAsiento.DISPONIBLE);
+            for (DetalleVenta detalle: venta.getListaDetalles()){
+                for (Entrada entrada: detalle.getListaEntradas()){
+                    if (entrada.getAsiento() != null) {
+                        entrada.getAsiento().setEstado(EstadoAsiento.DISPONIBLE);
+                    }
+                }
             }
+
         }
     }
 
@@ -287,7 +287,7 @@ public class Cine {
         Scanner sc = new Scanner(System.in);
         int opcion = 1;
         //Generar un código automatico
-        int codigo= listaVentas.getLast().getCodigo()+1;
+        int codigoVenta= listaVentas.getLast().getCodigo()+1;
         if (listaVentas== null || listaVentas.isEmpty()){
             codigo= 1;
         }
@@ -307,7 +307,7 @@ public class Cine {
         }
 
         //Seleccionar una funcion
-        System.out.println("\n Ingrese código de la función seleccionada: ");
+        System.out.println("\n Ingrese código de la función deseada: ");
         int codigoFuncion= sc.nextInt();
 
         Funcion funcionSeleccionada = consultarFuncion(codigoFuncion);
@@ -321,31 +321,34 @@ public class Cine {
         int cantidad= sc.nextInt();
         sc.nextLine();
 
+        DetalleVenta detalleVenta= new DetalleVenta(cantidad);
+
+        //Generar codigo para entrada
+        int codigoEntrada= funcionSeleccionada.getListaEntradas().getLast().getCodigo()+1;
+        if (funcionSeleccionada.getListaEntradas()== null || funcionSeleccionada.getListaEntradas().isEmpty()){
+            codigo= 1;
+        }
+
         for (int i = 0; i < cantidad; i++) {
             System.out.println("\n--- ENTRADA " + (i + 1) + " de " + cantidad + " ---");
 
             // Mostrar asientos disponibles de la sala de esa función
             System.out.println("Asientos disponibles:");
-            funcionSeleccionada.getSala().getListaAsientos().forEach(asiento -> {
+            for (Asiento asiento: funcionSeleccionada.getSala().getListaAsientos()){
                 if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
                     System.out.print("[" + asiento.obtenerPuesto() + "]");
                 }
-            });
-            System.out.println();
-
+            }
             System.out.print("Ingrese el puesto del asiento que desea (Ej: A1, B5): ");
             String codigoAsiento = sc.nextLine();
 
-            // Buscar el asiento en la función/sala
             Asiento asientoSeleccionado = funcionSeleccionada.getSala().consultarAsientoPorPuesto(codigoAsiento);
-            if (asientoSeleccionado == null) {
-                System.out.println("Error: El asiento no existe.");
-                break;
-            }
+            asientoSeleccionado.setEstado(EstadoAsiento.OCUPADO);
 
             // Validar si está disponible
-            if (asientoSeleccionado.getEstado() != EstadoAsiento.DISPONIBLE) {
-                throw new AsientoOcupadoException("El asiento "+codigoAsiento+" ya se encuentra ocupado.");
+            if (asientoSeleccionado.getEstado() == EstadoAsiento.OCUPADO) {
+                System.out.println("Error: El asiento ya se encuentra ocupado.");
+                break;
             }
 
             // 5. Seleccionar tipo de cliente
@@ -353,37 +356,39 @@ public class Cine {
             System.out.print("¿Qué tipo de entrada es?: ");
             int numeroTipoCliente = sc.nextInt();
 
-            TipoCliente tipoClienteEntrada;
+            TipoEntrada tipoEntrada=null;
             if (numeroTipoCliente == 1) {
-                tipoClienteEntrada = TipoCliente.GENERAL;
+                tipoEntrada = TipoEntrada.GENERAL;
             } else if (numeroTipoCliente == 2) {
-                tipoClienteEntrada = TipoCliente.ESTUDIANTE;
-            } else if (numeroTipoCliente == 3) {
-                tipoClienteEntrada = TipoCliente.NINIO;
+                tipoEntrada = TipoEntrada.ESTUDIANTE;
+            } else if (numeroTipoCliente  == 3) {
+                tipoEntrada = TipoEntrada.NINIO;
             } else if (numeroTipoCliente == 4) {
-                tipoClienteEntrada = TipoCliente.ADULTO_MAYOR;
+                tipoEntrada = TipoEntrada.ADULTO_MAYOR;
             } else {
                 System.out.println("Elección no válida. Se asignará GENERAL por defecto.");
-                tipoClienteEntrada = TipoCliente.GENERAL;
+                tipoEntrada = TipoEntrada.GENERAL;
             }
+            Entrada entrada= new Entrada(codigoEntrada, funcionSeleccionada, asientoSeleccionado, tipoEntrada);
+            boolean agregada= detalleVenta.agregarEntrada(entrada);
 
-            // 6. Calcular el valor a pagar
-            double valorTotal= calcularValorTotal(cliente, cantidad, funcionSeleccionada);
-
-            // 7. Crear la venta y registrarla
-            LocalDateTime fechaHoraVenta = LocalDateTime.now();
-
-            Venta nuevaVenta = new Venta(codigo, cliente, funcionSeleccionada, asientoSeleccionado,fechaHoraVenta, EstadoVenta.ACTIVA, vendedor, cantidad);
-
-            // Cambiar estado del asiento a ocupado
-            asientoSeleccionado.setEstado(EstadoAsiento.OCUPADO);
-
-            // Guardar la venta en la lista general del cine/sistema
-            listaVentas.add(nuevaVenta);
-
-            System.out.println("¡Entrada agregada y venta registrada con éxito! Código: " + codigo);
+            if (agregada) {
+                System.out.println("Entrada agregada con éxito.");
+            }else {
+                System.out.println("Error al agregar la entrada. No se contará esta entrada");
+            }
         }
 
+        // 6. Calcular el valor a pagar
+        double valorTotal= calcularValorTotal(codigoVenta, cliente);
+
+        // 7. Crear la venta y registrarla
+        LocalDateTime fechaHoraVenta = LocalDateTime.now();
+
+        Venta nuevaVenta = new Venta(codigoVenta, cliente, fechaHoraVenta, valorTotal, EstadoVenta.ACTIVA, vendedor);
+
+        // Guardar la venta
+        listaVentas.add(nuevaVenta);
     }
 
     // ==========================================

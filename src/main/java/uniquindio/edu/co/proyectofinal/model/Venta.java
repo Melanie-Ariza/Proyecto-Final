@@ -13,10 +13,11 @@ public class Venta {
     private Vendedor vendedor;
     private List<DetalleVenta> listaDetalles;
 
-    public Venta(int codigo, Cliente cliente, LocalDateTime fechaHoraVenta, EstadoVenta estadoVenta, Vendedor vendedor) {
+    public Venta(int codigo, Cliente cliente, LocalDateTime fechaHoraVenta, double valorPagado, EstadoVenta estadoVenta, Vendedor vendedor) {
         this.codigo = codigo;
         this.cliente = cliente;
         this.fechaHoraVenta = fechaHoraVenta;
+        this.valorPagado= valorPagado;
         this.estadoVenta = estadoVenta;
         this.vendedor = vendedor;
         listaDetalles= new ArrayList<>();
