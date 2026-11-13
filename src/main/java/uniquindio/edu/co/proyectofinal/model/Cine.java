@@ -1,5 +1,8 @@
 package uniquindio.edu.co.proyectofinal.model;
 
+import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.PeliculaDuplicadaException;
+import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -86,7 +89,9 @@ public class Cine {
     // ==========================================
 
     public boolean registrarPelicula(int codigo, String nombre, String genero, int duracion, String estado, Clasificacion clasificacion) {
-        if (consultarPelicula(codigo) != null) return false;
+        if (consultarPelicula(codigo) != null) {
+            throw new PeliculaDuplicadaException("Ya existe una pelicula registrada con el código" + codigo);
+        }
         Pelicula nuevaPelicula = new Pelicula(codigo, nombre, genero, duracion, estado, new ArrayList<>(), clasificacion);
         this.listaPeliculas.add(nuevaPelicula);
         return true;
@@ -125,7 +130,9 @@ public class Cine {
     // ==========================================
 
     public boolean registrarSala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
-        if (consultarSala(numero) != null) return false;
+        if (consultarSala(numero) != null){
+            throw new SalaDuplicadaException("La sala con el código "+numero+" ya existe en la base de datos");
+        }
         Sala nuevaSala = new Sala(codigo, numero, capacidad, estado, coleccionAsientos);
         this.listaSalas.add(nuevaSala);
         return true;
@@ -290,7 +297,9 @@ public class Cine {
 // 5. Consultas Específicas y Métodos de Negocio
 // Estos métodos resuelven la lógica analítica y de consulta solicitada para el funcionamiento del cine:
 
-// consultarPeliculasDisponibles: Filtra el listado general y retorna únicamente aquellas cuyo estado sea "ACTIVO".consultarFuncionesPorFecha: Compara la fecha ingresada por parámetro con el atributo LocalDate fecha de cada función registrada.
+// consultarPeliculasDisponibles: Filtra el listado general y retorna únicamente aquellas cuyo estado sea "ACTIVO".
+
+//consultarFuncionesPorFecha: Compara la fecha ingresada por parámetro con el atributo LocalDate fecha de cada función registrada.
 
 // consultarDisponibilidadAsientos: Consulta la función y delega el cálculo directamente al metodo nativo contarAsientosDisponibles() de la clase Sala, el cual recorre los asientos analizando cuáles se encuentran con EstadoAsiento.DISPONIBLE.
 
