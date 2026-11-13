@@ -1,5 +1,10 @@
 package uniquindio.edu.co.proyectofinal.model;
 
+import uniquindio.edu.co.proyectofinal.Excepciones.FuncionInexistenteException.FuncionInexistenteException;
+import uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException;
+import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.PeliculaDuplicadaException;
+import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -99,10 +104,15 @@ public class Cine {
     // ==========================================
     public boolean registrarPelicula(Pelicula pelicula) {
         boolean agregada = false;
-        if (pelicula != null && consultarPelicula(pelicula.getCodigo()) == null) {
-            listaPeliculas.add(pelicula);
-            agregada = true;
+
+        // 1. Validar pelicula repetida
+        if (consultarPelicula(pelicula.getCodigo()) != null) {
+            throw new PeliculaDuplicadaException("La película ya existe en el sistema con el código " + pelicula.getCodigo());
         }
+
+        listaPeliculas.add(pelicula);
+        agregada = true;
+
         return agregada;
     }
 
@@ -146,10 +156,12 @@ public class Cine {
 
     public boolean registrarSala(Sala sala) {
         boolean agregada = false;
-        if (sala != null && consultarSala(sala.getCodigo()) == null) {
+        if (consultarSala(sala.getCodigo()) != null) {
+            throw new SalaDuplicadaException("La sala ya existe en la base de datos con el codigo " + sala.getCodigo());
+        }
             listaSalas.add(sala);
             agregada = true;
-        }
+
         return agregada;
     }
 
@@ -413,14 +425,25 @@ public class Cine {
     // Consultar la ocupación de una función específica
     public double consultarOcupacionFuncion(int codigoFuncion) {
         Funcion f = consultarFuncion(codigoFuncion);
+
+        if (f == null) {
+            throw new FuncionInexistenteException("La función no existe.");
+        }
+
+        if (f.getSala().contarAsientosDisponibles() <= 0) {
+            throw new FuncionSinCupoException("La función no tiene cupos disponibles.");
+        }
+
         if (f != null && f.getSala() != null && f.getSala().getCapacidad() > 0) {
             int capacidadTotal = f.getSala().getCapacidad();
             int disponibles = f.getSala().contarAsientosDisponibles();
             int vendidos = capacidadTotal - disponibles;
             return (double) vendidos / capacidadTotal * 100.0;
         }
+
         return 0.0;
     }
+
 
     // Identificar la película con mayor cantidad de entradas vendidas
     public Pelicula identificarPeliculaMasVendida() {
