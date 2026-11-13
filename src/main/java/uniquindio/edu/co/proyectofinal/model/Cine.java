@@ -1,8 +1,5 @@
 package uniquindio.edu.co.proyectofinal.model;
 
-import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.PeliculaDuplicadaException;
-import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,6 +12,7 @@ public class Cine {
     private List<Persona> listaPersonas;
     private List<Funcion> listaFunciones;
     private List<Sala> listaSalas;
+    private List<Venta> listaVentas;
 
     public Cine(int codigo, String nombre) {
         this.codigo = codigo;
@@ -23,6 +21,7 @@ public class Cine {
         this.listaPersonas = new ArrayList<>();
         this.listaFunciones = new ArrayList<>();
         this.listaSalas = new ArrayList<>();
+        this.listaVentas = new ArrayList<>();
     }
 
     public List<Funcion> getListaFunciones() {
@@ -73,116 +72,164 @@ public class Cine {
         this.listaPersonas = listaPersonas;
     }
 
+    public List<Venta> getListaVentas() {
+        return listaVentas;
+    }
+
+    public void setListaVentas(List<Venta> listaVentas) {
+        this.listaVentas = listaVentas;
+    }
+
     @Override
     public String toString() {
         return "Cine\n" +
                 "Código:" + codigo +
                 ", Nombre: " + nombre +
-                ", Lista peliculas: " + listaPeliculas+
-                ", Lista Personas: "+listaPersonas +
-                ", Lista funciones: "+listaFunciones+
-                ", Lista salas: "+listaSalas;
+                ", Peliculas: " + listaPeliculas+
+                ", Personas: "+listaPersonas +
+                ", Funciones: "+listaFunciones+
+                ", Salas: "+listaSalas+
+                ", Ventas: "+ listaVentas;
     }
 
     // ==========================================
     // 1. GESTIÓN DE PELÍCULAS (CRUD)
     // ==========================================
-
-    public boolean registrarPelicula(int codigo, String nombre, String genero, int duracion, String estado, Clasificacion clasificacion) {
-        if (consultarPelicula(codigo) != null) {
-            throw new PeliculaDuplicadaException("Ya existe una pelicula registrada con el código" + codigo);
+    public boolean registrarPelicula(Pelicula pelicula) {
+        boolean agregada = false;
+        if (pelicula != null && consultarPelicula(pelicula.getCodigo()) == null) {
+            listaPeliculas.add(pelicula);
+            agregada = true;
         }
-        Pelicula nuevaPelicula = new Pelicula(codigo, nombre, genero, duracion, estado, new ArrayList<>(), clasificacion);
-        this.listaPeliculas.add(nuevaPelicula);
-        return true;
+        return agregada;
     }
 
     public Pelicula consultarPelicula(int codigo) {
-        for (Pelicula p : this.listaPeliculas) {
-            if (p.getCodigo() == codigo) return p;
+        Pelicula peliculaEncontrada = null;
+        for (Pelicula pelicula : listaPeliculas) {
+            if (pelicula.getCodigo() == codigo) {
+                peliculaEncontrada = pelicula;
+                break;
+            }
         }
-        return null;
+        return peliculaEncontrada;
     }
 
-    public boolean modificarPelicula(int codigo, String nuevoNombre, String nuevoGenero, int nuevaDuracion, String nuevoEstado) {
-        Pelicula p = consultarPelicula(codigo);
-        if (p != null) {
-            p.setNombre(nuevoNombre);
-            p.setGenero(nuevoGenero);
-            p.setDuracion(nuevaDuracion);
-            p.setEstado(nuevoEstado);
-            return true;
+    public boolean modificarPelicula(int codigo, Pelicula peliculaActualizada) {
+        boolean estaActualizada = false;
+        Pelicula pelicula = consultarPelicula(codigo);
+        if (pelicula != null && peliculaActualizada != null) {
+            pelicula.setNombre(peliculaActualizada.getNombre());
+            pelicula.setGenero(peliculaActualizada.getGenero());
+            pelicula.setDuracion(peliculaActualizada.getDuracion());
+            pelicula.setEstado(peliculaActualizada.getEstado());
+            estaActualizada = true;
         }
-        return false;
+        return estaActualizada;
     }
 
     public boolean deshabilitarPelicula(int codigo) {
-        Pelicula p = consultarPelicula(codigo);
-        if (p != null) {
-            p.setEstado("INACTIVO");
-            return true;
+        boolean deshabilitada = false;
+        Pelicula pelicula = consultarPelicula(codigo);
+        if (pelicula != null) {
+            pelicula.setEstado("NO_DISPONIBLE");
+            deshabilitada = true;
         }
-        return false;
+        return deshabilitada;
     }
 
     // ==========================================
     // 2. GESTIÓN DE SALAS (CRUD)
     // ==========================================
 
-    public boolean registrarSala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
-        if (consultarSala(numero) != null){
-            throw new SalaDuplicadaException("La sala con el código "+numero+" ya existe en la base de datos");
+    public boolean registrarSala(Sala sala) {
+        boolean agregada = false;
+        if (sala != null && consultarSala(sala.getCodigo()) == null) {
+            listaSalas.add(sala);
+            agregada = true;
         }
-        Sala nuevaSala = new Sala(codigo, numero, capacidad, estado, coleccionAsientos);
-        this.listaSalas.add(nuevaSala);
-        return true;
+        return agregada;
     }
 
-    public Sala consultarSala(int numeroSala) {
-        for (Sala s : this.listaSalas) {
-            if (s.getNumero() == numeroSala) return s;
+    public Sala consultarSala(int numero) {
+        Sala sala0= null;
+        for (Sala sala : listaSalas) {
+            if (sala.getCodigo() == codigo){
+                sala0=sala;
+            }
         }
-        return null;
+        return sala0;
     }
 
-    public boolean modificarSala(int numeroSala, int nuevaCapacidad, EstadoSala nuevoEstado, ColeccionAsientos nuevaColeccionAsientos) {
-        Sala s = consultarSala(numeroSala);
-        if (s != null) {
-            s.setCapacidad(nuevaCapacidad); // Esto regenera automáticamente los asientos gracias al método de la clase Sala
-            s.setEstado(nuevoEstado);
-            s.setColeccionAsientos(nuevaColeccionAsientos);
-            return true;
+    public boolean modificarSala(int numero, Sala salaActualizada) {
+        boolean estaActualizada= false;
+        Sala sala = consultarSala(codigo);
+        if (sala != null) {
+            sala.setCapacidad(salaActualizada.getCapacidad());
+            sala.setEstado(salaActualizada.getEstado());
+            sala.setColeccionAsientos(salaActualizada.getColeccionAsientos());
+            estaActualizada= true;
         }
-        return false;
+        return estaActualizada;
     }
 
-    public boolean deshabilitarSala(int numeroSala) {
-        Sala s = consultarSala(numeroSala);
-        if (s != null) {
-            s.setEstado(EstadoSala.FUERA_DE_SERVICIO); // Usando el enum correspondiente
-            return true;
+    public boolean deshabilitarSala(int codigo) {
+        boolean deshabilitada = false;
+        Sala sala = consultarSala(codigo);
+        if (sala != null) {
+            sala.setEstado(EstadoSala.FUERA_DE_SERVICIO);
+            deshabilitada = true;
         }
-        return false;
+        return deshabilitada;
     }
 
     // ==========================================
-    // 3. PROGRAMAR Y GESTIONAR FUNCIONES
+    // 3. GESTIÓN DE FUNCIONES (CRUD)
     // ==========================================
-
-    public boolean programarFuncion(int codigo, Pelicula pelicula, Sala sala, LocalTime hora, LocalDate fecha, double valorBase, EstadoFuncion estadoFuncion) {
-        if (consultarFuncion(codigo) != null || pelicula == null || sala == null) return false;
-
-        Funcion nuevaFuncion = new Funcion(codigo, pelicula, sala, hora, fecha, valorBase, estadoFuncion, new ArrayList<>());
-        this.listaFunciones.add(nuevaFuncion);
-        pelicula.getListaFunciones().add(nuevaFuncion); // Añade la función a la lista interna de la película
-        return true;
+    public boolean programarFuncion(Pelicula pelicula, Funcion nuevaFuncion) {
+        boolean programada = false;
+        if (pelicula != null && nuevaFuncion != null && consultarFuncion(nuevaFuncion.getCodigo()) == null) {
+            if (nuevaFuncion.getSala() != null && nuevaFuncion.getSala().getEstado() == EstadoSala.DISPONIBLE) {
+                listaFunciones.add(nuevaFuncion);
+                pelicula.getListaFunciones().add(nuevaFuncion);
+                programada = true;
+            }
+        }
+        return programada;
     }
 
-    public Funcion consultarFuncion(int codigoFuncion) {
-        for (Funcion f : this.listaFunciones) {
-            if (f.getCodigo() == codigoFuncion) return f;
+    public Funcion consultarFuncion(int codigo) {
+        Funcion funcion0= null;
+        for (Funcion funcion : listaFunciones) {
+            if (funcion.getCodigo() == codigo){
+                funcion0=funcion;
+            }
         }
-        return null;
+        return funcion0;
+    }
+
+    public boolean modificarFuncion(int codigo, Funcion funcionActualizada) {
+        boolean estaActualizada= false;
+        Funcion funcion = consultarFuncion(codigo);
+        if (funcion != null) {
+            funcion.setPelicula(funcionActualizada.getPelicula());
+            funcion.setSala(funcionActualizada.getSala());
+            funcion.setFecha(funcionActualizada.getFecha());
+            funcion.setHora(funcionActualizada.getHora());
+            funcion.setEstadoFuncion(funcionActualizada.getEstadoFuncion());
+            estaActualizada= true;
+        }
+        return estaActualizada;
+    }
+
+    public boolean deshabilitarFuncion(int codigo) {
+        boolean deshabilitada=false;
+        Funcion funcion= consultarFuncion(codigo);
+        if (funcion != null) {
+            funcion.setEstadoFuncion(EstadoFuncion.CANCELADA);
+            deshabilitada=true;
+        }
+        return deshabilitada;
     }
 
     // ==========================================
@@ -216,7 +263,7 @@ public class Cine {
         return funcionesFecha;
     }
 
-    // Consultar disponibilidad de asientos de una función (aprovechando el metodo nativo de la clase Sala)
+    // Consultar disponibilidad de asientos de una función
     public int consultarDisponibilidadAsientos(int codigoFuncion) {
         Funcion f = consultarFuncion(codigoFuncion);
         if (f != null && f.getSala() != null) {
@@ -225,7 +272,7 @@ public class Cine {
         return -1; // Función no encontrada
     }
 
-    // Consultar la ocupación de una función específica (Porcentaje)
+    // Consultar la ocupación de una función específica
     public double consultarOcupacionFuncion(int codigoFuncion) {
         Funcion f = consultarFuncion(codigoFuncion);
         if (f != null && f.getSala() != null && f.getSala().getCapacidad() > 0) {
@@ -260,6 +307,30 @@ public class Cine {
         }
         return peliculaMasVendida;
     }
+
+    // Consultar el total de entradas vendidas (solo ventas activas)
+    public int consultarTotalEntradasVendidas() {
+        int totalEntradas = 0;
+        for (Venta venta : this.listaVentas) {
+            if (venta != null && venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
+                totalEntradas++;
+            }
+        }
+        return totalEntradas;
+    }
+
+    // Consultar el total de ingresos generados (solo ventas activas)
+    public double consultarTotalIngresosGenerados() {
+        double totalIngresos = 0.0;
+        for (Venta venta : this.listaVentas) {
+            if (venta != null && venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
+                totalIngresos += venta.getValorPagado();
+            }
+        }
+        return totalIngresos;
+    }
+
+
 
 
 }
@@ -297,9 +368,7 @@ public class Cine {
 // 5. Consultas Específicas y Métodos de Negocio
 // Estos métodos resuelven la lógica analítica y de consulta solicitada para el funcionamiento del cine:
 
-// consultarPeliculasDisponibles: Filtra el listado general y retorna únicamente aquellas cuyo estado sea "ACTIVO".
-
-//consultarFuncionesPorFecha: Compara la fecha ingresada por parámetro con el atributo LocalDate fecha de cada función registrada.
+// consultarPeliculasDisponibles: Filtra el listado general y retorna únicamente aquellas cuyo estado sea "ACTIVO".consultarFuncionesPorFecha: Compara la fecha ingresada por parámetro con el atributo LocalDate fecha de cada función registrada.
 
 // consultarDisponibilidadAsientos: Consulta la función y delega el cálculo directamente al metodo nativo contarAsientosDisponibles() de la clase Sala, el cual recorre los asientos analizando cuáles se encuentran con EstadoAsiento.DISPONIBLE.
 

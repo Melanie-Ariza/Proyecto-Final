@@ -10,6 +10,7 @@ public class Sala {
     private ColeccionAsientos coleccionAsientos;
     private List<Asiento> listaAsientos;
 
+
     public Sala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
         this.codigo = codigo;
         this.numero = numero;
@@ -17,6 +18,7 @@ public class Sala {
         this.estado = estado;
         this.coleccionAsientos = coleccionAsientos;
         this.listaAsientos = new ArrayList<>();
+        generarAsientos();
     }
 
     public int getCodigo() {
@@ -76,6 +78,53 @@ public class Sala {
                 ", Estado: " + estado +
                 ", Colección asientos: " + coleccionAsientos +
                 ", Lista asientos: " + listaAsientos;
+    }
+
+    // ==========================================
+    // 1. GESTIÓN DE ASIENTOS (CRUD)
+    // ==========================================
+
+
+    public Asiento consultarAsiento(int codigo) {
+        Asiento asiento0= null;
+        for (Asiento asiento : listaAsientos) {
+            if (asiento.getCodigo() == codigo){
+                asiento0=asiento;
+            }
+        }
+        return asiento0;
+    }
+
+    public boolean ocuparAsiento(int codigo) {
+        boolean ocupado=false;
+        Asiento asiento= consultarAsiento(codigo);
+        if (asiento != null) {
+            asiento.setEstado(EstadoAsiento.OCUPADO);
+            ocupado=true;
+        }
+        return ocupado;
+    }
+
+    public void generarAsientos() {
+        listaAsientos.clear();
+        int sillasPorFila = 10;
+        int contadorCodigo = 1;
+
+        // Calculamos el total de filas necesarias según la capacidad
+        int filas = (int) Math.ceil((double) capacidad / sillasPorFila);
+        int asientosCreados = 0;
+
+        for (int i = 0; i < filas; i++) {
+            // Determinamos la letra de la fila
+            char letraFila = (char) ('A' + i);
+            String nombreFila = String.valueOf(letraFila);
+
+            for (int j = 1; j <= sillasPorFila && asientosCreados < capacidad; j++) {
+                int numeroSilla = j;
+                listaAsientos.add(new Asiento(contadorCodigo++, nombreFila, numeroSilla, EstadoAsiento.DISPONIBLE));
+                asientosCreados++;
+            }
+        }
     }
 
     public int contarAsientosDisponibles() {
