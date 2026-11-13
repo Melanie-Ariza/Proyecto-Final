@@ -1,27 +1,25 @@
 package uniquindio.edu.co.proyectofinal.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Venta {
     private int codigo;
     private Cliente cliente;
-    private Funcion funcion;
-    private Asiento asiento;
     private LocalDateTime fechaHoraVenta;
     private double valorPagado;
     private EstadoVenta estadoVenta;
     private Vendedor vendedor;
-    private int cantidad;
+    private List<DetalleVenta> listaDetalles;
 
-    public Venta(int codigo, Cliente cliente, Funcion funcion, Asiento asiento, LocalDateTime fechaHoraVenta, EstadoVenta estadoVenta, Vendedor vendedor, int cantidad) {
+    public Venta(int codigo, Cliente cliente, LocalDateTime fechaHoraVenta, EstadoVenta estadoVenta, Vendedor vendedor) {
         this.codigo = codigo;
         this.cliente = cliente;
-        this.funcion = funcion;
-        this.asiento = asiento;
         this.fechaHoraVenta = fechaHoraVenta;
         this.estadoVenta = estadoVenta;
         this.vendedor = vendedor;
-        this.cantidad = cantidad;
+        listaDetalles= new ArrayList<>();
     }
 
     public int getCodigo() {
@@ -38,22 +36,6 @@ public class Venta {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
-    }
-
-    public Funcion getFuncion() {
-        return funcion;
-    }
-
-    public void setFuncion(Funcion funcion) {
-        this.funcion = funcion;
-    }
-
-    public Asiento getAsiento() {
-        return asiento;
-    }
-
-    public void setAsiento(Asiento asiento) {
-        this.asiento = asiento;
     }
 
     public LocalDateTime getFechaHoraVenta() {
@@ -88,12 +70,12 @@ public class Venta {
         this.vendedor = vendedor;
     }
 
-    public int getCantidad() {
-        return cantidad;
+    public List<DetalleVenta> getListaDetalles() {
+        return listaDetalles;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
+    public void setListaDetalles(List<DetalleVenta> listaDetalles) {
+        this.listaDetalles = listaDetalles;
     }
 
     @Override
@@ -102,10 +84,9 @@ public class Venta {
         return "Venta: \n" +
                 " | Código: " + codigo +
                 " | Cliente: " + cliente +
-                " | Asiento: " + (asiento != null ? asiento.obtenerPuesto() : "N/A") +
-                " | Cantidad: " + cantidad +
                 " | Valor: $" + valorPagado +
                 " | Fecha: " + fechaHoraVenta.format(formato) +
-                " | Estado: " + estadoVenta;
+                " | Estado: " + estadoVenta+
+                " | Detalles: "+ listaDetalles;
     }
 }

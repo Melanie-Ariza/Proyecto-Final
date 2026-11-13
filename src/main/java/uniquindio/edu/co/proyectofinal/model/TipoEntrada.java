@@ -1,6 +1,6 @@
 package uniquindio.edu.co.proyectofinal.model;
 
-public enum TipoCliente {
+public enum TipoEntrada {
     GENERAL (15000),
     ESTUDIANTE (12000),
     NINIO (10000),
@@ -8,11 +8,12 @@ public enum TipoCliente {
 
     private double valorEntrada;
 
-    TipoCliente(double valorEntrada) {
+    TipoEntrada(double valorEntrada) {
         this.valorEntrada = valorEntrada;
     }
 
     public double getValorEntrada() {
         return valorEntrada;
     }
+
 }

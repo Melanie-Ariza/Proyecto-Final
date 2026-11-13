@@ -2,6 +2,7 @@ package uniquindio.edu.co.proyectofinal.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Funcion {
@@ -12,9 +13,9 @@ public class Funcion {
     private LocalTime hora;
     private double valorBase;
     EstadoFuncion estadoFuncion;
-    private List<Venta> listaVentas;
+    private List<Entrada> listaEntradas;
 
-    public Funcion(int codigo, Pelicula pelicula, Sala sala, LocalTime hora, LocalDate fecha, double valorBase, EstadoFuncion estadoFuncion, List<Venta> listaVentas) {
+    public Funcion(int codigo, Pelicula pelicula, Sala sala, LocalTime hora, LocalDate fecha, double valorBase, EstadoFuncion estadoFuncion) {
         this.codigo = codigo;
         this.pelicula = pelicula;
         this.sala = sala;
@@ -22,7 +23,7 @@ public class Funcion {
         this.fecha = fecha;
         this.valorBase = valorBase;
         this.estadoFuncion = estadoFuncion;
-        this.listaVentas = listaVentas;
+        listaEntradas = new ArrayList<>();
     }
 
     public int getCodigo() {
@@ -81,12 +82,12 @@ public class Funcion {
         this.estadoFuncion = estadoFuncion;
     }
 
-    public List<Venta> getListaVentas() {
-        return listaVentas;
+    public List<Entrada> getListaEntradas() {
+        return listaEntradas;
     }
 
-    public void setListaVentas(List<Venta> listaVentas) {
-        this.listaVentas = listaVentas;
+    public void setListaEntradas(List<Entrada> listaEntradas) {
+        this.listaEntradas = listaEntradas;
     }
 
     @Override
@@ -99,6 +100,6 @@ public class Funcion {
                 ", Hora: " + hora +
                 ", Valor base: " + valorBase +
                 ", Estado función: " + estadoFuncion +
-                ", Lista ventas:" + listaVentas;
+                ", Lista entradas:" + listaEntradas;
     }
 }
