@@ -1,6 +1,5 @@
 package uniquindio.edu.co.proyectofinal.model;
 
-import javax.xml.parsers.SAXParser;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -264,7 +263,7 @@ public class Cine {
         return funcionesFecha;
     }
 
-    // Consultar disponibilidad de asientos de una función (aprovechando el metodo nativo de la clase Sala)
+    // Consultar disponibilidad de asientos de una función
     public int consultarDisponibilidadAsientos(int codigoFuncion) {
         Funcion f = consultarFuncion(codigoFuncion);
         if (f != null && f.getSala() != null) {
@@ -273,7 +272,7 @@ public class Cine {
         return -1; // Función no encontrada
     }
 
-    // Consultar la ocupación de una función específica (Porcentaje)
+    // Consultar la ocupación de una función específica
     public double consultarOcupacionFuncion(int codigoFuncion) {
         Funcion f = consultarFuncion(codigoFuncion);
         if (f != null && f.getSala() != null && f.getSala().getCapacidad() > 0) {
