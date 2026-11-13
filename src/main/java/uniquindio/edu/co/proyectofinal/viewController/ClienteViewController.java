@@ -1,4 +1,4 @@
 package uniquindio.edu.co.proyectofinal.viewController;
 
-public class AsientoViewController {
+public class ClienteViewController {
 }
