@@ -539,7 +539,7 @@ public class Cine {
         if (listaPeliculas.isEmpty()) return null;
 
         Pelicula peliculaMasVendida = null;
-        int maxEntradas = -1;
+        int maxEntradas = 0;
 
         for (Pelicula p : this.listaPeliculas) {
             int totalEntradasPelicula = 0;

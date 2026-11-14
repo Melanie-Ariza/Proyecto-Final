@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20.0" style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.controller.GestionPeliculasController">
+    <padding>
+        <Insets bottom="30.0" left="35.0" right="35.0" top="30.0" />
+    </padding>
+    <children>
+        <Label text="GESTIÓN DE PELÍCULAS • CATÁLOGO" textFill="#222222">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+
+        <!-- Tabla de Películas -->
+        <VBox spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0, 0, 3);">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <TableView fx:id="tablaPeliculas" prefHeight="240.0">
+                    <columns>
+                        <TableColumn fx:id="colCodigo" prefWidth="90.0" text="Código" />
+                        <TableColumn fx:id="colNombre" prefWidth="220.0" text="Nombre" />
+                        <TableColumn fx:id="colGenero" prefWidth="180.0" text="Género" />
+                        <TableColumn fx:id="colDuracion" prefWidth="110.0" text="Duración (min)" />
+                        <TableColumn fx:id="colClasificacion" prefWidth="130.0" text="Clasificación" />
+                        <TableColumn fx:id="colEstado" prefWidth="130.0" text="Estado" />
+                    </columns>
+                </TableView>
+
+                <!-- Formulario de Modificación y Acciones -->
+                <VBox spacing="12.0">
+                    <children>
+                        <Label text="Modificar o Administrar Película Seleccionada" textFill="#333333">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                        </Label>
+
+                        <HBox spacing="12.0">
+                            <children>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Código:" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <TextField fx:id="txtCodigo" promptText="Código" editable="false" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Nombre:" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <TextField fx:id="txtNombre" promptText="Nombre de película" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Género:" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <TextField fx:id="txtGenero" promptText="Ej: Acción / Drama" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <HBox spacing="12.0">
+                            <children>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Duración (min):" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <TextField fx:id="txtDuracion" promptText="Ej: 120" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Clasificación:" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <ComboBox fx:id="comboClasificacion" maxWidth="1.7976931348623157E308" promptText="Seleccionar" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Estado:" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <TextField fx:id="txtEstado" promptText="ACTIVO / NO_DISPONIBLE" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <!-- Botones de Acción -->
+                        <HBox spacing="12.0" alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#modificarPelicula" style="-fx-background-color: #C8102E; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="MODIFICAR PELÍCULA" textFill="WHITE">
+                                    <padding><Insets bottom="8.0" left="16.0" right="16.0" top="8.0" /></padding>
+                                </Button>
+                                <Button mnemonicParsing="false" onAction="#deshabilitarPelicula" style="-fx-background-color: #1C1C1C; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="DESHABILITAR (DAR DE BAJA)" textFill="WHITE">
+                                    <padding><Insets bottom="8.0" left="16.0" right="16.0" top="8.0" /></padding>
+                                </Button>
+                                <Button mnemonicParsing="false" onAction="#limpiarCampos" style="-fx-background-color: #555555; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="LIMPIAR" textFill="WHITE">
+                                    <padding><Insets bottom="8.0" left="16.0" right="16.0" top="8.0" /></padding>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</VBox>

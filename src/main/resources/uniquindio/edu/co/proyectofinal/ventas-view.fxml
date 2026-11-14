@@ -5,100 +5,108 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox spacing="20.0" style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.controller.VentaController">
-    <padding>
-        <Insets bottom="30.0" left="35.0" right="35.0" top="30.0" />
-    </padding>
-    <children>
-        <Label text="TAQUILLA • VENTA DE BOLETAS" textFill="#222222">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font>
-        </Label>
-
-        <!-- Tarjeta blanca del formulario -->
-        <VBox maxWidth="620.0" spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0, 0, 3);">
+<ScrollPane fitToWidth="true" style="-fx-background: #F4F4F4; -fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.controller.VentaController">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #F4F4F4;">
             <padding>
-                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                <Insets bottom="30.0" left="35.0" right="35.0" top="30.0" />
             </padding>
             <children>
-                <!-- Datos del Cliente -->
-                <HBox spacing="15.0">
+                <!-- Contenedor alineado a la izquierda o centro para el título -->
+                <VBox maxWidth="800.0" spacing="5.0">
                     <children>
-                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <Label text="Documento Cliente:" textFill="#444444">
-                                    <font><Font name="System Bold" size="12.0" /></font>
-                                </Label>
-                                <TextField fx:id="txtDocumentoCliente" promptText="Ej: 1094888999" />
-                            </children>
-                        </VBox>
-                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <Label text="Nombre Cliente:" textFill="#444444">
-                                    <font><Font name="System Bold" size="12.0" /></font>
-                                </Label>
-                                <TextField fx:id="txtNombreCliente" promptText="Ej: Santiago Pérez" />
-                            </children>
-                        </VBox>
-                    </children>
-                </HBox>
-
-                <!-- Selección de Función -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Función programada:" textFill="#444444">
-                            <font><Font name="System Bold" size="12.0" /></font>
+                        <Label text="TAQUILLA • VENTA DE BOLETAS" textFill="#222222">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
                         </Label>
-                        <ComboBox fx:id="cmbFuncion" maxWidth="1.7976931348623157E308" onAction="#alSeleccionarFuncion" promptText="Selecciona una función" />
                     </children>
                 </VBox>
 
-                <!-- Selección de Asiento y Tipo de Entrada -->
-                <HBox spacing="15.0">
-                    <children>
-                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <Label text="Asiento disponible:" textFill="#444444">
-                                    <font><Font name="System Bold" size="12.0" /></font>
-                                </Label>
-                                <!-- ASEGÚRATE DE QUE TENGA EL onAction="#actualizarPrecioEstimado" AQUÍ: -->
-                                <ComboBox fx:id="cmbAsiento" maxWidth="1.7976931348623157E308" onAction="#actualizarPrecioEstimado" promptText="Ej: A1" />
-                            </children>
-                        </VBox>
-                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <Label text="Tipo de Entrada:" textFill="#444444">
-                                    <font><Font name="System Bold" size="12.0" /></font>
-                                </Label>
-                                <ComboBox fx:id="cmbTipoEntrada" maxWidth="1.7976931348623157E308" onAction="#actualizarPrecioEstimado" promptText="Tarifa" />
-                            </children>
-                        </VBox>
-                    </children>
-                </HBox>
-
-                <!-- Total calculado automáticamente desde los Enums -->
-                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #F8F8F8; -fx-padding: 10; -fx-background-radius: 4;">
-                    <children>
-                        <Label text="TOTAL A PAGAR:" textFill="#333333">
-                            <font><Font name="System Bold" size="13.0" /></font>
-                        </Label>
-                        <Label fx:id="lblTotalPagar" text="\$ 0" textFill="#C8102E">
-                            <font><Font name="System Bold" size="18.0" /></font>
-                        </Label>
-                    </children>
-                </HBox>
-
-                <Label fx:id="lblMensaje" textFill="#C8102E" wrapText="true">
-                    <font><Font name="System Bold" size="12.0" /></font>
-                </Label>
-
-                <Button mnemonicParsing="false" onAction="#registrarVenta" style="-fx-background-color: #C8102E; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="CONFIRMAR VENTA" textFill="WHITE">
+                <!-- Tarjeta blanca del formulario con un ancho máximo flexible pero adaptable -->
+                <VBox maxWidth="800.0" spacing="16.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0, 0, 3);" VBox.vgrow="ALWAYS">
                     <padding>
-                        <Insets bottom="10.0" left="22.0" right="22.0" top="10.0" />
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
                     </padding>
-                </Button>
+                    <children>
+                        <!-- Datos del Cliente -->
+                        <HBox spacing="20.0">
+                            <children>
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Documento Cliente:" textFill="#444444">
+                                            <font><Font name="System Bold" size="12.0" /></font>
+                                        </Label>
+                                        <TextField fx:id="txtDocumentoCliente" maxWidth="1.7976931348623157E308" promptText="Ej: 1094888999" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Nombre Cliente:" textFill="#444444">
+                                            <font><Font name="System Bold" size="12.0" /></font>
+                                        </Label>
+                                        <TextField fx:id="txtNombreCliente" maxWidth="1.7976931348623157E308" promptText="Ej: Santiago Pérez" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <!-- Selección de Función -->
+                        <VBox spacing="6.0">
+                            <children>
+                                <Label text="Función programada:" textFill="#444444">
+                                    <font><Font name="System Bold" size="12.0" /></font>
+                                </Label>
+                                <ComboBox fx:id="cmbFuncion" maxWidth="1.7976931348623157E308" onAction="#alSeleccionarFuncion" promptText="Selecciona una función" />
+                            </children>
+                        </VBox>
+
+                        <!-- Selección de Asiento y Tipo de Entrada -->
+                        <HBox spacing="20.0">
+                            <children>
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Asiento disponible:" textFill="#444444">
+                                            <font><Font name="System Bold" size="12.0" /></font>
+                                        </Label>
+                                        <ComboBox fx:id="cmbAsiento" maxWidth="1.7976931348623157E308" onAction="#actualizarPrecioEstimado" promptText="Ej: A1" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Tipo de Entrada:" textFill="#444444">
+                                            <font><Font name="System Bold" size="12.0" /></font>
+                                        </Label>
+                                        <ComboBox fx:id="cmbTipoEntrada" maxWidth="1.7976931348623157E308" onAction="#actualizarPrecioEstimado" promptText="Tarifa" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <!-- Total calculado -->
+                        <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="15.0" style="-fx-background-color: #F8F8F8; -fx-padding: 12; -fx-background-radius: 6;">
+                            <children>
+                                <Label text="TOTAL A PAGAR:" textFill="#333333">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                </Label>
+                                <Label fx:id="lblTotalPagar" text="\$ 0" textFill="#C8102E">
+                                    <font><Font name="System Bold" size="20.0" /></font>
+                                </Label>
+                            </children>
+                        </HBox>
+
+                        <Label fx:id="lblMensaje" textFill="#C8102E" wrapText="true">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+
+                        <Button mnemonicParsing="false" onAction="#registrarVenta" style="-fx-background-color: #C8102E; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="CONFIRMAR VENTA" textFill="WHITE">
+                            <padding>
+                                <Insets bottom="12.0" left="26.0" right="26.0" top="12.0" />
+                            </padding>
+                        </Button>
+                    </children>
+                </VBox>
             </children>
         </VBox>
-    </children>
-</VBox>
+    </content>
+</ScrollPane>

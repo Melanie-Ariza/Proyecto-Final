@@ -64,6 +64,7 @@ public class GestionPersonasController {
         colCodigoVenta.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colFechaVenta.setCellValueFactory(new PropertyValueFactory<>("fechaHora"));
         colValorVenta.setCellValueFactory(new PropertyValueFactory<>("valorPagado"));
+        
 
         // Cargar ComboBox de Cargos
         if (comboCargoVendedor != null) {
