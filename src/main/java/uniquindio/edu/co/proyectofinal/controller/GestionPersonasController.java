@@ -1,5 +1,6 @@
 package uniquindio.edu.co.proyectofinal.controller;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ public class GestionPersonasController {
     @FXML private TableColumn<Vendedor, Integer> colIdVendedor;
     @FXML private TableColumn<Vendedor, String> colNombreVendedor;
     @FXML private TableColumn<Vendedor, Cargo> colCargoVendedor;
+    @FXML private TableColumn<Vendedor, Double> colSueldoVendedor;
     @FXML private TextField txtIdVendedor, txtNombreVendedor, txtSalarioVendedor;
     @FXML private ComboBox<Cargo> comboCargoVendedor;
 
@@ -28,7 +30,8 @@ public class GestionPersonasController {
     @FXML private TableColumn<ClienteVendedor, Integer> colIdCV;
     @FXML private TableColumn<ClienteVendedor, String> colNombreCV;
     @FXML private TableColumn<ClienteVendedor, Cargo> colCargoCV;
-    @FXML private TextField txtIdCV, txtNombreCV;
+    @FXML private TableColumn<ClienteVendedor, Double> colSueldoCV;
+    @FXML private TextField txtIdCV, txtNombreCV, txtSalarioCV;
     @FXML private ComboBox<Cargo> comboCargoCV;
 
     // --- TAB VENTAS POR PERSONA ---
@@ -54,26 +57,54 @@ public class GestionPersonasController {
         colIdVendedor.setCellValueFactory(new PropertyValueFactory<>("documento"));
         colNombreVendedor.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colCargoVendedor.setCellValueFactory(new PropertyValueFactory<>("cargo"));
+        colSueldoVendedor.setCellValueFactory(cellData -> {
+            Vendedor v = cellData.getValue();
+            if (v != null && v.getCargo() != null) {
+                return new SimpleDoubleProperty(v.getCargo().getSalario()).asObject();
+            }
+            return new SimpleDoubleProperty(0.0).asObject();
+        });
 
         // Configurar columnas de ClienteVendedor
         colIdCV.setCellValueFactory(new PropertyValueFactory<>("documento"));
         colNombreCV.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colCargoCV.setCellValueFactory(new PropertyValueFactory<>("cargo"));
+        colSueldoCV.setCellValueFactory(cellData -> {
+            ClienteVendedor cv = cellData.getValue();
+            if (cv != null && cv.getCargo() != null) {
+                return new SimpleDoubleProperty(cv.getCargo().getSalario()).asObject();
+            }
+            return new SimpleDoubleProperty(0.0).asObject();
+        });
 
         // Configurar columnas de Ventas
         colCodigoVenta.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colFechaVenta.setCellValueFactory(new PropertyValueFactory<>("fechaHora"));
         colValorVenta.setCellValueFactory(new PropertyValueFactory<>("valorPagado"));
 
-        // Cargar ComboBox de Cargos
+        // Cargar ComboBox de Cargos y asociar listeners para actualizar el salario automáticamente
         if (comboCargoVendedor != null) {
             comboCargoVendedor.setItems(FXCollections.observableArrayList(Cargo.values()));
-        }
-        if (comboCargoCV != null) {
-            comboCargoCV.setItems(FXCollections.observableArrayList(Cargo.values()));
+            comboCargoVendedor.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    txtSalarioVendedor.setText(String.format("%,.0f", newVal.getSalario()));
+                } else {
+                    txtSalarioVendedor.clear();
+                }
+            });
         }
 
-        // Listeners para rellenar campos al seleccionar elementos en las tablas
+        if (comboCargoCV != null) {
+            comboCargoCV.setItems(FXCollections.observableArrayList(Cargo.values()));
+            comboCargoCV.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    txtSalarioCV.setText(String.format("%,.0f", newVal.getSalario()));
+                } else {
+                    txtSalarioCV.clear();
+                }
+            });
+        }
+
         configurarListenersTablas();
     }
 
@@ -91,7 +122,10 @@ public class GestionPersonasController {
                 txtIdVendedor.setText(String.valueOf(newVal.getDocumento()));
                 txtIdVendedor.setDisable(true);
                 txtNombreVendedor.setText(newVal.getNombre());
-                if (newVal.getCargo() != null) comboCargoVendedor.setValue(newVal.getCargo());
+                if (newVal.getCargo() != null) {
+                    comboCargoVendedor.setValue(newVal.getCargo());
+                    txtSalarioVendedor.setText(String.format("%,.0f", newVal.getCargo().getSalario()));
+                }
             }
         });
 
@@ -100,14 +134,16 @@ public class GestionPersonasController {
                 txtIdCV.setText(String.valueOf(newVal.getDocumento()));
                 txtIdCV.setDisable(true);
                 txtNombreCV.setText(newVal.getNombre());
-                if (newVal.getCargo() != null) comboCargoCV.setValue(newVal.getCargo());
+                if (newVal.getCargo() != null) {
+                    comboCargoCV.setValue(newVal.getCargo());
+                    txtSalarioCV.setText(String.format("%,.0f", newVal.getCargo().getSalario()));
+                }
             }
         });
     }
 
     public void actualizarTablas() {
         if (cine != null && cine.getListaPersonas() != null) {
-            // Filtrar la lista general de personas según la clase correspondiente
             var clientes = cine.getListaPersonas().stream()
                     .filter(p -> p instanceof Cliente && !(p instanceof ClienteVendedor))
                     .map(p -> (Cliente) p)
@@ -192,8 +228,8 @@ public class GestionPersonasController {
 
             int documento = Integer.parseInt(txtIdVendedor.getText());
             String nombre = txtNombreVendedor.getText();
-            double salario = txtSalarioVendedor.getText().isEmpty() ? 0.0 : Double.parseDouble(txtSalarioVendedor.getText());
             Cargo cargo = comboCargoVendedor.getValue();
+            double salario = cargo.getSalario(); // Obtenido automáticamente del enum
 
             Vendedor seleccionado = tablaVendedores.getSelectionModel().getSelectedItem();
             if (seleccionado == null) {
@@ -210,7 +246,7 @@ public class GestionPersonasController {
             limpiarCamposVendedor(null);
             actualizarTablas();
         } catch (NumberFormatException e) {
-            mostrarAlerta("Error", "Documento o salario inválidos.", Alert.AlertType.ERROR);
+            mostrarAlerta("Error", "Documento inválido.", Alert.AlertType.ERROR);
         }
     }
 
@@ -285,6 +321,7 @@ public class GestionPersonasController {
         txtIdCV.clear();
         txtIdCV.setDisable(false);
         txtNombreCV.clear();
+        txtSalarioCV.clear();
         comboCargoCV.setValue(null);
         tablaClienteVendedor.getSelectionModel().clearSelection();
     }
@@ -310,7 +347,6 @@ public class GestionPersonasController {
         Persona personaSeleccionada = comboPersonas.getSelectionModel().getSelectedItem();
 
         if (ventaSeleccionada != null && personaSeleccionada != null) {
-            // Remover de la lista de compras/ventas de la persona seleccionada
             if (personaSeleccionada instanceof Cliente && !(personaSeleccionada instanceof ClienteVendedor)) {
                 ((Cliente) personaSeleccionada).getListaCompras().remove(ventaSeleccionada);
             } else if (personaSeleccionada instanceof Vendedor && !(personaSeleccionada instanceof ClienteVendedor)) {
