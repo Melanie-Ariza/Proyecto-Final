@@ -237,12 +237,6 @@ public class PrincipalController {
             }
             ventaController.setCine(this.cine);
 
-            // CONFIGURAR LA ACCIÓN AUTOMÁTICA AL CONFIRMAR LA VENTA
-            ventaController.setOnVentaExitosaCallback(() -> {
-                // Cambiar automáticamente a la pestaña de Gestión de Personas
-                mostrarGestionPersonas(null);
-            });
-
             borderPanePrincipal.setCenter(nodoVentas);
             activarBotonMenuPersonalizado(btnVentas);
         } catch (IOException e) {
