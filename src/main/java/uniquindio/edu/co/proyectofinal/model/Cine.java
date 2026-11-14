@@ -4,6 +4,7 @@ import uniquindio.edu.co.proyectofinal.Excepciones.FuncionInexistenteException.F
 import uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException;
 import uniquindio.edu.co.proyectofinal.Excepciones.PeliculaDuplicadaException.PeliculaDuplicadaException;
 import uniquindio.edu.co.proyectofinal.Excepciones.SalaDuplicadaException.SalaDuplicadaException;
+import uniquindio.edu.co.proyectofinal.Excepciones.VentaInexistenteException.VentaInexistenteException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -281,50 +282,91 @@ public class Cine {
     // 4. GESTION DE VENTAS
     // ==========================================
 
+    // Registrar una venta (usado por la interfaz gráfica y pruebas)
+    public boolean registrarVenta(Venta venta) {
+        if (venta == null) {
+            throw new VentaInexistenteException("La venta no puede ser nula.");
+        }
+
+        for (DetalleVenta detalle : venta.getListaDetalles()) {
+            for (Entrada entrada : detalle.getListaEntradas()) {
+                Funcion funcion = entrada.getFuncion();
+
+                if (funcion == null || consultarFuncion(funcion.getCodigo()) == null) {
+                    throw new FuncionInexistenteException("La función asociada a la venta no existe.");
+                }
+
+                if (funcion.getSala() == null || funcion.getSala().contarAsientosDisponibles() <= 0) {
+                    throw new FuncionSinCupoException("La función " + funcion.getCodigo() + " no tiene cupos disponibles.");
+                }
+            }
+        }
+
+        listaVentas.add(venta);
+        return true;
+    }
+
+    // Consultar una venta por código (lanza VentaInexistenteException si no existe)
+    public Venta consultarVenta(int codigo) {
+        for (Venta venta : listaVentas) {
+            if (venta.getCodigo() == codigo) {
+                return venta;
+            }
+        }
+        throw new VentaInexistenteException("No existe ninguna venta registrada con el código " + codigo);
+    }
+
     // Calcula el valor total
     public double calcularValorTotal(int codigo, Persona cliente) {
         double total = 0;
-        double subtotal= 0;
 
-        for (Venta venta: listaVentas){
-            if (venta.getCodigo()==codigo){
-                for (DetalleVenta detalle: venta.getListaDetalles()){
-                    subtotal= detalle.calcularSubtotal();
-                    total+=subtotal;
+        for (Venta venta : listaVentas) {
+            if (venta.getCodigo() == codigo) {
+                for (DetalleVenta detalle : venta.getListaDetalles()) {
+                    total += detalle.calcularSubtotal();
                 }
             }
         }
 
         if (cliente instanceof ClienteVendedor) {
-            total= total * ((ClienteVendedor) cliente).calcularDescuento();
+            total = total * ((ClienteVendedor) cliente).calcularDescuento();
         }
         return total;
     }
 
+    // Cancelar venta recibiendo el objeto Venta
     public void cancelarVenta(Venta venta) {
+        if (venta == null || !listaVentas.contains(venta)) {
+            throw new VentaInexistenteException("La venta que intenta cancelar no existe en el sistema.");
+        }
+
         if (venta.getEstadoVenta() == EstadoVenta.ACTIVA) {
-            EstadoVenta estadoVenta = EstadoVenta.CANCELADA;
-            for (DetalleVenta detalle: venta.getListaDetalles()){
-                for (Entrada entrada: detalle.getListaEntradas()){
+            venta.setEstadoVenta(EstadoVenta.CANCELADA);
+            for (DetalleVenta detalle : venta.getListaDetalles()) {
+                for (Entrada entrada : detalle.getListaEntradas()) {
                     if (entrada.getAsiento() != null) {
                         entrada.getAsiento().setEstado(EstadoAsiento.DISPONIBLE);
                     }
                 }
             }
-
         }
+    }
+
+    // Sobrecarga para cancelar venta buscando por su código
+    public void cancelarVenta(int codigoVenta) {
+        Venta venta = consultarVenta(codigoVenta); // Lanza VentaInexistenteException si no la encuentra
+        cancelarVenta(venta);
     }
 
     public void comenzarVenta(Cliente cliente, Vendedor vendedor) {
         Scanner sc = new Scanner(System.in);
-        int opcion = 1;
-        //Generar un código automatico
-        int codigoVenta= listaVentas.getLast().getCodigo()+1;
-        if (listaVentas== null || listaVentas.isEmpty()){
-            codigo= 1;
-        }
 
-        //Mostrar funciones disponibles
+        // Generar un código automático sin fallar si la lista está vacía
+        int codigoVenta = (listaVentas == null || listaVentas.isEmpty())
+                ? 1
+                : listaVentas.get(listaVentas.size() - 1).getCodigo() + 1;
+
+        // Mostrar funciones disponibles
         System.out.println("\n--- FUNCIONES DISPONIBLES ---");
         boolean hayFunciones = false;
         for (Funcion funcion : listaFunciones) {
@@ -338,62 +380,70 @@ public class Cine {
             return;
         }
 
-        //Seleccionar una funcion
-        System.out.println("\n Ingrese código de la función deseada: ");
-        int codigoFuncion= sc.nextInt();
+        // Seleccionar una función
+        System.out.println("\nIngrese código de la función deseada: ");
+        int codigoFuncion = sc.nextInt();
 
         Funcion funcionSeleccionada = consultarFuncion(codigoFuncion);
         if (funcionSeleccionada == null) {
-            System.out.println("Error: La función ingresada no existe.");
-            return;
+            throw new FuncionInexistenteException("La función ingresada no existe.");
         }
 
-        //Preguntar por cantidad de entradas
+        // Validar cupo disponible en la función
+        int cuposDisponibles = funcionSeleccionada.getSala().contarAsientosDisponibles();
+        if (cuposDisponibles <= 0) {
+            throw new FuncionSinCupoException("La función seleccionada no tiene cupos disponibles.");
+        }
+
+        // Preguntar por cantidad de entradas
         System.out.println("¿Cuántas entradas desea?: ");
-        int cantidad= sc.nextInt();
+        int cantidad = sc.nextInt();
         sc.nextLine();
 
-        DetalleVenta detalleVenta= new DetalleVenta(cantidad);
-
-        //Generar codigo para entrada
-        int codigoEntrada= funcionSeleccionada.getListaEntradas().getLast().getCodigo()+1;
-        if (funcionSeleccionada.getListaEntradas()== null || funcionSeleccionada.getListaEntradas().isEmpty()){
-            codigo= 1;
+        if (cantidad > cuposDisponibles) {
+            throw new FuncionSinCupoException("Solo quedan " + cuposDisponibles + " cupos disponibles para esta función.");
         }
+
+        DetalleVenta detalleVenta = new DetalleVenta(cantidad);
+
+        // Generar código para entrada sin fallar si la lista está vacía
+        int codigoEntrada = (funcionSeleccionada.getListaEntradas() == null || funcionSeleccionada.getListaEntradas().isEmpty())
+                ? 1
+                : funcionSeleccionada.getListaEntradas().get(funcionSeleccionada.getListaEntradas().size() - 1).getCodigo() + 1;
 
         for (int i = 0; i < cantidad; i++) {
             System.out.println("\n--- ENTRADA " + (i + 1) + " de " + cantidad + " ---");
 
-            // Mostrar asientos disponibles de la sala de esa función
             System.out.println("Asientos disponibles:");
-            for (Asiento asiento: funcionSeleccionada.getSala().getListaAsientos()){
+            for (Asiento asiento : funcionSeleccionada.getSala().getListaAsientos()) {
                 if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
                     System.out.print("[" + asiento.obtenerPuesto() + "]");
                 }
             }
-            System.out.print("Ingrese el puesto del asiento que desea (Ej: A1, B5): ");
+            System.out.print("\nIngrese el puesto del asiento que desea (Ej: A1, B5): ");
             String codigoAsiento = sc.nextLine();
 
             Asiento asientoSeleccionado = funcionSeleccionada.getSala().consultarAsientoPorPuesto(codigoAsiento);
-            asientoSeleccionado.setEstado(EstadoAsiento.OCUPADO);
 
-            // Validar si está disponible
-            if (asientoSeleccionado.getEstado() == EstadoAsiento.OCUPADO) {
-                System.out.println("Error: El asiento ya se encuentra ocupado.");
+            // Validar antes de ocupar
+            if (asientoSeleccionado == null || asientoSeleccionado.getEstado() == EstadoAsiento.OCUPADO) {
+                System.out.println("Error: El asiento no existe o ya se encuentra ocupado.");
                 break;
             }
+            asientoSeleccionado.setEstado(EstadoAsiento.OCUPADO);
 
-            // 5. Seleccionar tipo de cliente
+            // Seleccionar tipo de cliente
             System.out.println("1. GENERAL, 2. ESTUDIANTE, 3. NIÑO, 4. ADULTO MAYOR");
             System.out.print("¿Qué tipo de entrada es?: ");
             int numeroTipoCliente = sc.nextInt();
+            sc.nextLine();
 
-            TipoEntrada tipoEntrada=null;
+            TipoEntrada tipoEntrada;
             if (numeroTipoCliente == 1) {
                 tipoEntrada = TipoEntrada.GENERAL;
             } else if (numeroTipoCliente == 2) {
                 tipoEntrada = TipoEntrada.ESTUDIANTE;
-            } else if (numeroTipoCliente  == 3) {
+            } else if (numeroTipoCliente == 3) {
                 tipoEntrada = TipoEntrada.NIÑO;
             } else if (numeroTipoCliente == 4) {
                 tipoEntrada = TipoEntrada.ADULTO_MAYOR;
@@ -401,28 +451,26 @@ public class Cine {
                 System.out.println("Elección no válida. Se asignará GENERAL por defecto.");
                 tipoEntrada = TipoEntrada.GENERAL;
             }
-            Entrada entrada= new Entrada(codigoEntrada, funcionSeleccionada, asientoSeleccionado, tipoEntrada);
-            boolean agregada= detalleVenta.agregarEntrada(entrada);
+
+            Entrada entrada = new Entrada(codigoEntrada++, funcionSeleccionada, asientoSeleccionado, tipoEntrada);
+            boolean agregada = detalleVenta.agregarEntrada(entrada);
 
             if (agregada) {
                 System.out.println("Entrada agregada con éxito.");
-            }else {
+            } else {
                 System.out.println("Error al agregar la entrada. No se contará esta entrada");
             }
         }
 
-        // 6. Calcular el valor a pagar
-        double valorTotal= calcularValorTotal(codigoVenta, cliente);
-
-        // 7. Crear la venta y registrarla
+        // Calcular el valor a pagar y guardar la venta
         LocalDateTime fechaHoraVenta = LocalDateTime.now();
-
-        Venta nuevaVenta = new Venta(codigoVenta, cliente, fechaHoraVenta, valorTotal, EstadoVenta.ACTIVA, vendedor);
-
-        // Guardar la venta
+        Venta nuevaVenta = new Venta(codigoVenta, cliente, fechaHoraVenta, 0.0, EstadoVenta.ACTIVA, vendedor);
+        nuevaVenta.getListaDetalles().add(detalleVenta);
         listaVentas.add(nuevaVenta);
-    }
 
+        double valorTotal = calcularValorTotal(codigoVenta, cliente);
+        nuevaVenta.setValorPagado(valorTotal);
+    }
     // ==========================================
     // 5. CONSULTAS ESPECÍFICAS SOLICITADAS
     // ==========================================
