@@ -1,13 +1,15 @@
 package uniquindio.edu.co.proyectofinal.controller;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import uniquindio.edu.co.proyectofinal.Excepciones.FuncionInexistenteException.FuncionInexistenteException;
-import uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException;
-import uniquindio.edu.co.proyectofinal.Excepciones.VentaInexistenteException.VentaInexistenteException;
 import uniquindio.edu.co.proyectofinal.model.*;
 
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ import java.util.List;
 
 public class VentaController {
 
+    @FXML private ComboBox<Persona> cmbVendedor;
     @FXML private TextField txtDocumentoCliente;
     @FXML private TextField txtNombreCliente;
     @FXML private ComboBox<Funcion> cmbFuncion;
@@ -27,19 +30,33 @@ public class VentaController {
     @FXML private Label lblMensaje;
 
     private Cine cine;
-    private Vendedor vendedorActivo;
 
     public void setCine(Cine cine) {
         this.cine = cine;
         cargarDatosInicialesSiVacio();
+        cargarVendedoresEnCombo();
         cargarFuncionesEnCombo();
     }
 
     @FXML
     public void initialize() {
+        // Cargar las opciones del enum TipoEntrada
         cmbTipoEntrada.getItems().setAll(TipoEntrada.values());
         cmbTipoEntrada.setValue(TipoEntrada.GENERAL);
 
+        // Convertidor para mostrar nombres en el ComboBox de Vendedores
+        cmbVendedor.setConverter(new StringConverter<Persona>() {
+            @Override
+            public String toString(Persona p) {
+                if (p == null) return "";
+                String tipo = (p instanceof ClienteVendedor) ? "Cliente-Vendedor" : "Vendedor";
+                return p.getNombre() + " (" + tipo + " - Doc: " + p.getDocumento() + ")";
+            }
+            @Override
+            public Persona fromString(String s) { return null; }
+        });
+
+        // Solución robusta para el ComboBox de Asientos
         Callback<ListView<Asiento>, ListCell<Asiento>> asientoFactory = param -> new ListCell<Asiento>() {
             @Override
             protected void updateItem(Asiento asiento, boolean empty) {
@@ -61,11 +78,10 @@ public class VentaController {
                 return (a == null) ? "" : "Puesto " + a.obtenerPuesto();
             }
             @Override
-            public Asiento fromString(String s) {
-                return null;
-            }
+            public Asiento fromString(String s) { return null; }
         });
 
+        // Formato para mostrar cada Función en el ComboBox
         cmbFuncion.setConverter(new StringConverter<Funcion>() {
             @Override
             public String toString(Funcion f) {
@@ -74,23 +90,25 @@ public class VentaController {
                         + " (" + f.getSala().getColeccionAsientos() + ") - " + f.getHora();
             }
             @Override
-            public Funcion fromString(String s) {
-                return null;
-            }
+            public Funcion fromString(String s) { return null; }
         });
     }
 
     private void cargarDatosInicialesSiVacio() {
-        this.vendedorActivo = new Vendedor(1001, "Taquillero UQ", Cargo.OPERADOR.getSalario(), Cargo.OPERADOR);
+        if (cine != null && cine.getListaPersonas().isEmpty()) {
+            // Datos de prueba iniciales si no hay usuarios creados
+            Vendedor vendedorPrueba = new Vendedor(1001, "Taquillero UQ", Cargo.OPERADOR.getSalario(), Cargo.OPERADOR);
+            cine.registrarPersona(vendedorPrueba);
+        }
 
-        if (cine.getListaFunciones().isEmpty()) {
+        if (cine != null && cine.getListaFunciones().isEmpty()) {
             Sala sala1 = new Sala(1, 1, 20, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
             Sala salaVip = new Sala(2, 2, 15, EstadoSala.DISPONIBLE, ColeccionAsientos.VIP);
             cine.registrarSala(sala1);
             cine.registrarSala(salaVip);
 
             Pelicula peli1 = new Pelicula(101, "Rocky", "Drama / Acción", 130, "ACTIVO", new ArrayList<>(), Clasificacion.MAYORES_12, "/uniquindio/edu/co/proyectofinal/images/rocky.jpg");
-            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS,"/uniquindio/edu/co/proyectofinal/images/encanto.gif");
+            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS, "/uniquindio/edu/co/proyectofinal/images/encanto.gif");
 
             cine.registrarPelicula(peli1);
             cine.registrarPelicula(peli2);
@@ -102,11 +120,25 @@ public class VentaController {
         }
     }
 
+    private void cargarVendedoresEnCombo() {
+        cmbVendedor.getItems().clear();
+        if (cine != null && cine.getListaPersonas() != null) {
+            for (Persona p : cine.getListaPersonas()) {
+                // Filtrar personas que puedan actuar como vendedores (Vendedor o ClienteVendedor)
+                if (p instanceof Vendedor || p instanceof ClienteVendedor) {
+                    cmbVendedor.getItems().add(p);
+                }
+            }
+        }
+    }
+
     private void cargarFuncionesEnCombo() {
         cmbFuncion.getItems().clear();
-        for (Funcion f : cine.getListaFunciones()) {
-            if (f.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
-                cmbFuncion.getItems().add(f);
+        if (cine != null && cine.getListaFunciones() != null) {
+            for (Funcion f : cine.getListaFunciones()) {
+                if (f.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
+                    cmbFuncion.getItems().add(f);
+                }
             }
         }
     }
@@ -116,17 +148,14 @@ public class VentaController {
         Funcion funcion = cmbFuncion.getValue();
         cmbAsiento.getItems().clear();
 
-        if (funcion != null) {
-            Sala sala = funcion.getSala();
-            if (sala != null) {
-                List<Asiento> asientosDisponibles = new ArrayList<>();
-                for (Asiento a : sala.getListaAsientos()) {
-                    if (a.getEstado() == EstadoAsiento.DISPONIBLE) {
-                        asientosDisponibles.add(a);
-                    }
+        if (funcion != null && funcion.getSala() != null) {
+            List<Asiento> asientosDisponibles = new ArrayList<>();
+            for (Asiento a : funcion.getSala().getListaAsientos()) {
+                if (a.getEstado() == EstadoAsiento.DISPONIBLE) {
+                    asientosDisponibles.add(a);
                 }
-                cmbAsiento.getItems().setAll(asientosDisponibles);
             }
+            cmbAsiento.getItems().setAll(asientosDisponibles);
         }
         actualizarPrecioEstimado(null);
     }
@@ -142,125 +171,98 @@ public class VentaController {
             lblTotalPagar.setText("$ 0");
         }
     }
-    // Referencia para comunicarse con el controlador principal y cambiar de pestaña automáticamente
-    private Runnable onVentaExitosaCallback;
-
-    public void setOnVentaExitosaCallback(Runnable callback) {
-        this.onVentaExitosaCallback = callback;
-    }
 
     @FXML
     void registrarVenta(ActionEvent event) {
         try {
+            Persona vendedorSeleccionado = cmbVendedor.getValue();
             String docTexto = txtDocumentoCliente.getText().trim();
             String nombreCliente = txtNombreCliente.getText().trim();
             Funcion funcion = cmbFuncion.getValue();
             Asiento asiento = cmbAsiento.getValue();
             TipoEntrada tipoEntrada = cmbTipoEntrada.getValue();
 
-            if (docTexto.isEmpty() || nombreCliente.isEmpty() || funcion == null || asiento == null || tipoEntrada == null) {
-                mostrarAlerta("Campos Incompletos", "Por favor completa todos los datos para registrar la venta.", Alert.AlertType.WARNING);
+            if (vendedorSeleccionado == null || docTexto.isEmpty() || nombreCliente.isEmpty() || funcion == null || asiento == null || tipoEntrada == null) {
+                lblMensaje.setStyle("-fx-text-fill: #C8102E;");
+                lblMensaje.setText("Por favor complete el vendedor, los datos del cliente, función, asiento y tipo de entrada.");
                 return;
             }
 
             int documento = Integer.parseInt(docTexto);
 
-            // Buscar si el cliente ya existe en el cine para mantener su historial
-            Cliente cliente = null;
-            for (Persona p : cine.getListaPersonas()) {
-                if (p.getDocumento() == documento && p instanceof Cliente) {
-                    cliente = (Cliente) p;
-                    break;
+            // 1. Verificar si el cliente ya existe en el sistema
+            Persona personaExistente = cine.consultarPersona(documento);
+            Cliente clienteFinal = null;
+
+            if (personaExistente != null) {
+                if (personaExistente instanceof Cliente) {
+                    clienteFinal = (Cliente) personaExistente;
+                } else {
+                    lblMensaje.setStyle("-fx-text-fill: #C8102E;");
+                    lblMensaje.setText("El documento pertenece a un empleado registrado que no es cliente.");
+                    return;
+                }
+            } else {
+                // Si no existe, se crea y se registra en el cine validando duplicados
+                clienteFinal = new Cliente(documento, nombreCliente);
+                boolean registrado = cine.registrarPersona(clienteFinal);
+                if (!registrado) {
+                    lblMensaje.setStyle("-fx-text-fill: #C8102E;");
+                    lblMensaje.setText("Error: Ya existe una persona registrada con ese número de documento.");
+                    return;
                 }
             }
 
-            // Si no existe, crearlo y registrarlo en el cine
-            if (cliente == null) {
-                cliente = new Cliente(documento, nombreCliente);
-                cine.registrarPersona(cliente);
-            }
-
-            // Validar cupos mediante excepciones del modelo
-            if (funcion.getSala() == null || funcion.getSala().contarAsientosDisponibles() <= 0) {
-                throw new uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException("La función seleccionada no tiene cupos disponibles.");
-            }
-
-            // Validar asiento ocupado
-            if (asiento.getEstado() == EstadoAsiento.OCUPADO) {
-                mostrarAlerta("Asiento Ocupado", "El asiento seleccionado ya se encuentra ocupado.", Alert.AlertType.WARNING);
-                return;
-            }
-
-            DetalleVenta detalle = new DetalleVenta(1);
-            int codigoEntrada = (funcion.getListaEntradas() == null || funcion.getListaEntradas().isEmpty())
-                    ? 1
-                    : funcion.getListaEntradas().get(funcion.getListaEntradas().size() - 1).getCodigo() + 1;
-
-            Entrada entrada = new Entrada(codigoEntrada, funcion, asiento, tipoEntrada);
-            detalle.agregarEntrada(entrada);
-
-            int codigoVenta = (cine.getListaVentas() == null || cine.getListaVentas().isEmpty())
-                    ? 1
-                    : cine.getListaVentas().get(cine.getListaVentas().size() - 1).getCodigo() + 1;
-
-            Venta venta = new Venta(codigoVenta, cliente, java.time.LocalDateTime.now(), 0.0, EstadoVenta.ACTIVA, null);
-            venta.getListaDetalles().add(detalle);
-
-            // Calcular valor total usando la lógica del cine
-            double valorTotal = cine.calcularValorTotal(codigoVenta, cliente);
-            if (valorTotal == 0.0) {
-                valorTotal = detalle.calcularSubtotal();
-            }
-            venta.setValorPagado(valorTotal);
-
-            // Registrar venta a través del modelo Cine
-            cine.registrarVenta(venta);
-
-            // VINCULAR LA VENTA AL HISTORIAL DEL CLIENTE
-            cliente.getListaCompras().add(venta);
-
-            // Ocupar asiento físicamente
+            // 2. Ocupar asiento y crear Entrada
             asiento.setEstado(EstadoAsiento.OCUPADO);
-            if (funcion.getListaEntradas() == null) {
-                funcion.setListaEntradas(new java.util.ArrayList<>());
-            }
+            int codigoEntrada = funcion.getListaEntradas().size() + 1;
+            Entrada entrada = new Entrada(codigoEntrada, funcion, asiento, tipoEntrada);
             funcion.getListaEntradas().add(entrada);
 
-            mostrarAlerta("Éxito", "¡Venta registrada con éxito y vinculada al cliente!", Alert.AlertType.INFORMATION);
+            // 3. Crear DetalleVenta y calcular subtotal
+            DetalleVenta detalle = new DetalleVenta(1);
+            detalle.agregarEntrada(entrada);
+            double valorTotal = detalle.calcularSubtotal();
 
-            // Limpieza interna sin errores
-            limpiarCampos();
+            // 4. Determinar el vendedor para la venta (Vendedor o ClienteVendedor)
+            Vendedor vendedorObj = null;
+            if (vendedorSeleccionado instanceof Vendedor && !(vendedorSeleccionado instanceof ClienteVendedor)) {
+                vendedorObj = (Vendedor) vendedorSeleccionado;
+            }
 
-        } catch (uniquindio.edu.co.proyectofinal.Excepciones.FuncionSinCupoException.FuncionSinCupoException |
-                 uniquindio.edu.co.proyectofinal.Excepciones.VentaInexistenteException.VentaInexistenteException e) {
-            mostrarAlerta("Error de Negocio", e.getMessage(), Alert.AlertType.ERROR);
+            // 5. Crear Venta y registrarla en el Cine
+            int codigoVenta = cine.getListaVentas().size() + 1;
+            Venta venta = new Venta(codigoVenta, clienteFinal, LocalDateTime.now(), valorTotal, EstadoVenta.ACTIVA, vendedorObj);
+            venta.getListaDetalles().add(detalle);
+            cine.getListaVentas().add(venta);
+
+            // 6. Conectar de forma cruzada con las clases heredadas:
+            // Registrar compra en el cliente o cliente-vendedor
+            if (clienteFinal instanceof ClienteVendedor) {
+                ((ClienteVendedor) clienteFinal).getListaCompras().add(venta);
+            } else {
+                clienteFinal.getListaCompras().add(venta);
+            }
+
+            // Registrar venta en el vendedor o cliente-vendedor
+            if (vendedorSeleccionado instanceof ClienteVendedor) {
+                ((ClienteVendedor) vendedorSeleccionado).getListaVentas().add(venta);
+            } else if (vendedorSeleccionado instanceof Vendedor) {
+                ((Vendedor) vendedorSeleccionado).getListaVentas().add(venta);
+            }
+
+            lblMensaje.setStyle("-fx-text-fill: #1E7E34;");
+            lblMensaje.setText("¡Venta #" + codigoVenta + " exitosa! Puesto " + asiento.obtenerPuesto()
+                    + " asignado a " + clienteFinal.getNombre() + " por $" + String.format("%,.0f", valorTotal));
+
+            // Refrescar asientos disponibles
+            alSeleccionarFuncion(null);
+            txtDocumentoCliente.clear();
+            txtNombreCliente.clear();
+
         } catch (NumberFormatException e) {
-            mostrarAlerta("Formato Inválido", "El documento debe ser un número entero válido.", Alert.AlertType.ERROR);
-        } catch (Exception e) {
-            mostrarAlerta("Error", "Ocurrió un error al registrar la venta: " + e.getMessage(), Alert.AlertType.ERROR);
+            lblMensaje.setStyle("-fx-text-fill: #C8102E;");
+            lblMensaje.setText("El documento del cliente debe ser numérico.");
         }
     }
-    // Método para el botón del FXML
-    @FXML
-    void limpiarCampos(ActionEvent event) {
-        limpiarCampos();
-    }
-
-    // Método auxiliar interno que vacía los campos sin errores
-    public void limpiarCampos() {
-        if (txtDocumentoCliente != null) txtDocumentoCliente.clear();
-        if (txtNombreCliente != null) txtNombreCliente.clear();
-        if (cmbFuncion != null) cmbFuncion.setValue(null);
-        if (cmbAsiento != null) cmbAsiento.setValue(null);
-        if (cmbTipoEntrada != null) cmbTipoEntrada.setValue(null);
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
-
 }
