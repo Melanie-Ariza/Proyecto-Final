@@ -16,6 +16,7 @@ public class App extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 900, 600);
         stage.setTitle("CINEMAUQ - Sistema de Gestión");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 

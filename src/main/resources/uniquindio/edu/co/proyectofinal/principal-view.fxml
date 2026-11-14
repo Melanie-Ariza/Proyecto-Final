@@ -55,6 +55,11 @@
                     <Button fx:id="btnCartelera" mnemonicParsing="false" onAction="#mostrarCartelera" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="CARTELERA" textFill="#333333" />
                     <Button fx:id="btnVentas" mnemonicParsing="false" onAction="#mostrarVentas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="VENTA DE BOLETAS" textFill="#333333" />
                     <Button fx:id="btnSalas" mnemonicParsing="false" onAction="#mostrarSalas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="SALAS Y ASIENTOS" textFill="#333333" />
+                    <Button fx:id="btnPersonas" mnemonicParsing="false" onAction="#mostrarGestionPersonas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="GESTIÓN PERSONAS" textFill="#333333">
+                        <padding>
+                            <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
+                        </padding>
+                    </Button>
                     <Button fx:id="btnReportes" mnemonicParsing="false" onAction="#mostrarReportes" style="-fx-background-color: #C8102E; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;" text="REPORTES ADMIN" textFill="WHITE">
                         <padding>
                             <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
