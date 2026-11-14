@@ -1,5 +1,6 @@
 package uniquindio.edu.co.proyectofinal.controller;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -19,6 +20,7 @@ import java.util.List;
 
 public class VentaController {
 
+    @FXML private ComboBox<Persona> cmbVendedor;
     @FXML private TextField txtDocumentoCliente;
     @FXML private TextField txtNombreCliente;
     @FXML private ComboBox<Funcion> cmbFuncion;
@@ -28,11 +30,11 @@ public class VentaController {
     @FXML private Label lblMensaje;
 
     private Cine cine;
-    private Vendedor vendedorActivo;
 
     public void setCine(Cine cine) {
         this.cine = cine;
         cargarDatosInicialesSiVacio();
+        cargarVendedoresEnCombo();
         cargarFuncionesEnCombo();
     }
 
@@ -42,37 +44,41 @@ public class VentaController {
         cmbTipoEntrada.getItems().setAll(TipoEntrada.values());
         cmbTipoEntrada.setValue(TipoEntrada.GENERAL);
 
-        // --- SOLUCIÓN ROBUSTA PARA EL COMBOBOX DE ASIENTOS ---
-        Callback<ListView<Asiento>, ListCell<Asiento>> asientoFactory = new Callback<ListView<Asiento>, ListCell<Asiento>>() {
+        // Convertidor para mostrar nombres en el ComboBox de Vendedores
+        cmbVendedor.setConverter(new StringConverter<Persona>() {
             @Override
-            public ListCell<Asiento> call(ListView<Asiento> param) {
-                return new ListCell<Asiento>() {
-                    @Override
-                    protected void updateItem(Asiento asiento, boolean empty) {
-                        super.updateItem(asiento, empty);
-                        if (empty || asiento == null) {
-                            setText(null);
-                        } else {
-                            setText("Puesto " + asiento.obtenerPuesto());
-                        }
-                    }
-                };
+            public String toString(Persona p) {
+                if (p == null) return "";
+                String tipo = (p instanceof ClienteVendedor) ? "Cliente-Vendedor" : "Vendedor";
+                return p.getNombre() + " (" + tipo + " - Doc: " + p.getDocumento() + ")";
+            }
+            @Override
+            public Persona fromString(String s) { return null; }
+        });
+
+        // Solución robusta para el ComboBox de Asientos
+        Callback<ListView<Asiento>, ListCell<Asiento>> asientoFactory = param -> new ListCell<Asiento>() {
+            @Override
+            protected void updateItem(Asiento asiento, boolean empty) {
+                super.updateItem(asiento, empty);
+                if (empty || asiento == null) {
+                    setText(null);
+                } else {
+                    setText("Puesto " + asiento.obtenerPuesto());
+                }
             }
         };
 
         cmbAsiento.setCellFactory(asientoFactory);
         cmbAsiento.setButtonCell(asientoFactory.call(null));
 
-        // Convertidor de respaldo para seguridad de tipos
         cmbAsiento.setConverter(new StringConverter<Asiento>() {
             @Override
             public String toString(Asiento a) {
                 return (a == null) ? "" : "Puesto " + a.obtenerPuesto();
             }
             @Override
-            public Asiento fromString(String s) {
-                return null;
-            }
+            public Asiento fromString(String s) { return null; }
         });
 
         // Formato para mostrar cada Función en el ComboBox
@@ -84,25 +90,25 @@ public class VentaController {
                         + " (" + f.getSala().getColeccionAsientos() + ") - " + f.getHora();
             }
             @Override
-            public Funcion fromString(String s) {
-                return null;
-            }
+            public Funcion fromString(String s) { return null; }
         });
     }
 
     private void cargarDatosInicialesSiVacio() {
-        this.vendedorActivo = new Vendedor(1001, "Taquillero UQ", Cargo.OPERADOR.getSalario(), Cargo.OPERADOR);
+        if (cine != null && cine.getListaPersonas().isEmpty()) {
+            // Datos de prueba iniciales si no hay usuarios creados
+            Vendedor vendedorPrueba = new Vendedor(1001, "Taquillero UQ", Cargo.OPERADOR.getSalario(), Cargo.OPERADOR);
+            cine.registrarPersona(vendedorPrueba);
+        }
 
-        // Datos de prueba iniciales si el cine está vacío
-        if (cine.getListaFunciones().isEmpty()) {
+        if (cine != null && cine.getListaFunciones().isEmpty()) {
             Sala sala1 = new Sala(1, 1, 20, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
             Sala salaVip = new Sala(2, 2, 15, EstadoSala.DISPONIBLE, ColeccionAsientos.VIP);
             cine.registrarSala(sala1);
             cine.registrarSala(salaVip);
 
-            // Usamos el constructor original de Pelicula con sus parámetros
             Pelicula peli1 = new Pelicula(101, "Rocky", "Drama / Acción", 130, "ACTIVO", new ArrayList<>(), Clasificacion.MAYORES_12, "/uniquindio/edu/co/proyectofinal/images/rocky.jpg");
-            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS,"/uniquindio/edu/co/proyectofinal/images/encanto.gif");
+            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS, "/uniquindio/edu/co/proyectofinal/images/encanto.gif");
 
             cine.registrarPelicula(peli1);
             cine.registrarPelicula(peli2);
@@ -114,11 +120,25 @@ public class VentaController {
         }
     }
 
+    private void cargarVendedoresEnCombo() {
+        cmbVendedor.getItems().clear();
+        if (cine != null && cine.getListaPersonas() != null) {
+            for (Persona p : cine.getListaPersonas()) {
+                // Filtrar personas que puedan actuar como vendedores (Vendedor o ClienteVendedor)
+                if (p instanceof Vendedor || p instanceof ClienteVendedor) {
+                    cmbVendedor.getItems().add(p);
+                }
+            }
+        }
+    }
+
     private void cargarFuncionesEnCombo() {
         cmbFuncion.getItems().clear();
-        for (Funcion f : cine.getListaFunciones()) {
-            if (f.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
-                cmbFuncion.getItems().add(f);
+        if (cine != null && cine.getListaFunciones() != null) {
+            for (Funcion f : cine.getListaFunciones()) {
+                if (f.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
+                    cmbFuncion.getItems().add(f);
+                }
             }
         }
     }
@@ -128,19 +148,14 @@ public class VentaController {
         Funcion funcion = cmbFuncion.getValue();
         cmbAsiento.getItems().clear();
 
-        if (funcion != null) {
-            Sala sala = funcion.getSala();
-            if (sala != null) {
-                List<Asiento> asientosDisponibles = new ArrayList<>();
-                for (Asiento a : sala.getListaAsientos()) {
-                    if (a.getEstado() == EstadoAsiento.DISPONIBLE) {
-                        asientosDisponibles.add(a);
-                    }
+        if (funcion != null && funcion.getSala() != null) {
+            List<Asiento> asientosDisponibles = new ArrayList<>();
+            for (Asiento a : funcion.getSala().getListaAsientos()) {
+                if (a.getEstado() == EstadoAsiento.DISPONIBLE) {
+                    asientosDisponibles.add(a);
                 }
-
-                // Actualizamos el ComboBox de golpe con setAll para refrescar la vista
-                cmbAsiento.getItems().setAll(asientosDisponibles);
             }
+            cmbAsiento.getItems().setAll(asientosDisponibles);
         }
         actualizarPrecioEstimado(null);
     }
@@ -160,44 +175,90 @@ public class VentaController {
     @FXML
     void registrarVenta(ActionEvent event) {
         try {
+            Persona vendedorSeleccionado = cmbVendedor.getValue();
             String docTexto = txtDocumentoCliente.getText().trim();
             String nombreCliente = txtNombreCliente.getText().trim();
             Funcion funcion = cmbFuncion.getValue();
             Asiento asiento = cmbAsiento.getValue();
             TipoEntrada tipoEntrada = cmbTipoEntrada.getValue();
 
-            if (docTexto.isEmpty() || nombreCliente.isEmpty() || funcion == null || asiento == null || tipoEntrada == null) {
+            if (vendedorSeleccionado == null || docTexto.isEmpty() || nombreCliente.isEmpty() || funcion == null || asiento == null || tipoEntrada == null) {
                 lblMensaje.setStyle("-fx-text-fill: #C8102E;");
-                lblMensaje.setText("Completa los datos del cliente, la función, el asiento y el tipo de entrada.");
+                lblMensaje.setText("Por favor complete el vendedor, los datos del cliente, función, asiento y tipo de entrada.");
                 return;
             }
 
             int documento = Integer.parseInt(docTexto);
-            Cliente cliente = new Cliente(documento, nombreCliente);
 
-            // 1. Ocupar asiento y crear Entrada
+            // 1. Verificar si el cliente ya existe en el sistema
+            Persona personaExistente = cine.consultarPersona(documento);
+            Cliente clienteFinal = null;
+
+            if (personaExistente != null) {
+                if (personaExistente instanceof Cliente) {
+                    clienteFinal = (Cliente) personaExistente;
+                } else {
+                    lblMensaje.setStyle("-fx-text-fill: #C8102E;");
+                    lblMensaje.setText("El documento pertenece a un empleado registrado que no es cliente.");
+                    return;
+                }
+            } else {
+                // Si no existe, se crea y se registra en el cine validando duplicados
+                clienteFinal = new Cliente(documento, nombreCliente);
+                boolean registrado = cine.registrarPersona(clienteFinal);
+                if (!registrado) {
+                    lblMensaje.setStyle("-fx-text-fill: #C8102E;");
+                    lblMensaje.setText("Error: Ya existe una persona registrada con ese número de documento.");
+                    return;
+                }
+            }
+
+            // 2. Ocupar asiento y crear Entrada
             asiento.setEstado(EstadoAsiento.OCUPADO);
             int codigoEntrada = funcion.getListaEntradas().size() + 1;
             Entrada entrada = new Entrada(codigoEntrada, funcion, asiento, tipoEntrada);
             funcion.getListaEntradas().add(entrada);
 
-            // 2. Crear DetalleVenta y calcular subtotal real desde el modelo
+            // 3. Crear DetalleVenta y calcular subtotal
             DetalleVenta detalle = new DetalleVenta(1);
             detalle.agregarEntrada(entrada);
             double valorTotal = detalle.calcularSubtotal();
 
-            // 3. Crear Venta y agregarla al Cine
+            // 4. Determinar el vendedor para la venta (Vendedor o ClienteVendedor)
+            Vendedor vendedorObj = null;
+            if (vendedorSeleccionado instanceof Vendedor && !(vendedorSeleccionado instanceof ClienteVendedor)) {
+                vendedorObj = (Vendedor) vendedorSeleccionado;
+            }
+
+            // 5. Crear Venta y registrarla en el Cine
             int codigoVenta = cine.getListaVentas().size() + 1;
-            Venta venta = new Venta(codigoVenta, cliente, LocalDateTime.now(), valorTotal, EstadoVenta.ACTIVA, vendedorActivo);
+            Venta venta = new Venta(codigoVenta, clienteFinal, LocalDateTime.now(), valorTotal, EstadoVenta.ACTIVA, vendedorObj);
             venta.getListaDetalles().add(detalle);
             cine.getListaVentas().add(venta);
 
+            // 6. Conectar de forma cruzada con las clases heredadas:
+            // Registrar compra en el cliente o cliente-vendedor
+            if (clienteFinal instanceof ClienteVendedor) {
+                ((ClienteVendedor) clienteFinal).getListaCompras().add(venta);
+            } else {
+                clienteFinal.getListaCompras().add(venta);
+            }
+
+            // Registrar venta en el vendedor o cliente-vendedor
+            if (vendedorSeleccionado instanceof ClienteVendedor) {
+                ((ClienteVendedor) vendedorSeleccionado).getListaVentas().add(venta);
+            } else if (vendedorSeleccionado instanceof Vendedor) {
+                ((Vendedor) vendedorSeleccionado).getListaVentas().add(venta);
+            }
+
             lblMensaje.setStyle("-fx-text-fill: #1E7E34;");
             lblMensaje.setText("¡Venta #" + codigoVenta + " exitosa! Puesto " + asiento.obtenerPuesto()
-                    + " asignado a " + nombreCliente + " por $" + String.format("%,.0f", valorTotal));
+                    + " asignado a " + clienteFinal.getNombre() + " por $" + String.format("%,.0f", valorTotal));
 
-            // Refrescar asientos disponibles para que ese puesto ya no salga libre
+            // Refrescar asientos disponibles
             alSeleccionarFuncion(null);
+            txtDocumentoCliente.clear();
+            txtNombreCliente.clear();
 
         } catch (NumberFormatException e) {
             lblMensaje.setStyle("-fx-text-fill: #C8102E;");

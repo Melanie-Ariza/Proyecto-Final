@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import uniquindio.edu.co.proyectofinal.model.*;
 
+import java.time.LocalDateTime;
+
 public class GestionPersonasController {
 
     // --- TAB CLIENTES ---
@@ -79,7 +81,20 @@ public class GestionPersonasController {
 
         // Configurar columnas de Ventas
         colCodigoVenta.setCellValueFactory(new PropertyValueFactory<>("codigo"));
-        colFechaVenta.setCellValueFactory(new PropertyValueFactory<>("fechaHora"));
+        // Configurar columnas de Ventas
+        colCodigoVenta.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+
+        // Solución para mostrar la fecha y hora formateada correctamente
+        colFechaVenta.setCellValueFactory(cellData -> {
+            LocalDateTime fecha = cellData.getValue().getFechaHoraVenta(); //
+            if (fecha != null) {
+                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                return new javafx.beans.property.SimpleStringProperty(fecha.format(formatter));
+            }
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
+
+        colValorVenta.setCellValueFactory(new PropertyValueFactory<>("valorPagado"));
         colValorVenta.setCellValueFactory(new PropertyValueFactory<>("valorPagado"));
 
         // Cargar ComboBox de Cargos y asociar listeners para actualizar el salario automáticamente
