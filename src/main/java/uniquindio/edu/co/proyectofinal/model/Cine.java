@@ -503,8 +503,8 @@ public class Cine {
     }
 
     // ==========================================
-// 6. GESTIÓN DE PERSONAS (CRUD)
-// ==========================================
+    // 6. GESTIÓN DE PERSONAS (CRUD)
+    // ==========================================
     public boolean registrarPersona(Persona persona) {
         if (persona != null && consultarPersona(persona.getDocumento()) == null) {
             listaPersonas.add(persona);
