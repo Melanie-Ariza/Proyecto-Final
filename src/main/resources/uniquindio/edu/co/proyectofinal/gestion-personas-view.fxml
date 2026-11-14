@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.controller.GestionPersonasController">
+<BorderPane style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.viewController.GestionPersonasViewController">
     <center>
         <TabPane style="-fx-background-color: #FFFFFF;" tabClosingPolicy="UNAVAILABLE">
             <tabs>
