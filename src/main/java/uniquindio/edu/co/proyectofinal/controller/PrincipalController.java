@@ -24,6 +24,7 @@ public class PrincipalController {
     // Nuevos botones del menú superior
     @FXML private Button btnCartelera;
     @FXML private Button btnSalas;
+    @FXML private Button btnPersonas;
     @FXML private Button btnSalir;
 
     private Node vistaReportesInicial;
@@ -98,13 +99,28 @@ public class PrincipalController {
     }
 
     @FXML
+    void mostrarGestionPersonas(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/uniquindio/edu/co/proyectofinal/gestion-personas-view.fxml")
+        );
+        Parent vistaPersonas = loader.load();
+        GestionPersonasController controller = loader.getController();
+        controller.setCine(this.cine);
+
+        borderPanePrincipal.setCenter(vistaPersonas);
+
+        // Llamamos a la función para activar el estilo rojo en este botón
+        activarBotonMenuPersonalizado(btnPersonas);
+    }
+
+    @FXML
     void salirAplicacion(ActionEvent event) {
         Stage stage = (Stage) borderPanePrincipal.getScene().getWindow();
         stage.close();
     }
 
     private void activarBotonMenuPersonalizado(Button botonActivo) {
-        Button[] botones = {btnCartelera, btnVentas, btnSalas, btnReportes};
+        Button[] botones = {btnCartelera, btnVentas, btnSalas, btnPersonas, btnReportes};
         for (Button b : botones) {
             if (b != null) {
                 if (b == botonActivo) {

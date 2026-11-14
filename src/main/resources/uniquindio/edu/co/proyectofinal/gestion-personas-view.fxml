@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.controller.GestionPersonasController" style="-fx-background-color: #F4F4F4;">
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-background-color: #FFFFFF;">
+            <tabs>
+                <!-- Pestaña: Clientes -->
+                <Tab text="Clientes">
+                    <VBox spacing="15.0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="Gestión de Clientes" textFill="#222222">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                        <TableView fx:id="tablaClientes" prefHeight="240.0">
+                            <columns>
+                                <TableColumn fx:id="colIdCliente" text="Documento" prefWidth="150.0" />
+                                <TableColumn fx:id="colNombreCliente" text="Nombre" prefWidth="250.0" />
+                            </columns>
+                        </TableView>
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <TextField fx:id="txtIdCliente" promptText="Documento (Ej: 123)" prefWidth="150.0" />
+                            <TextField fx:id="txtNombreCliente" promptText="Nombre" prefWidth="220.0" />
+                            <Button text="Guardar / Actualizar" onAction="#guardarCliente" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                            <Button text="Eliminar" onAction="#eliminarCliente" style="-fx-background-color: #1C1C1C; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                            <Button text="Limpiar" onAction="#limpiarCamposCliente" style="-fx-background-color: #555555; -fx-text-fill: white; -fx-cursor: hand;" />
+                        </HBox>
+                    </VBox>
+                </Tab>
+
+                <!-- Pestaña: Vendedores -->
+                <Tab text="Vendedores">
+                    <VBox spacing="15.0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="Gestión de Vendedores" textFill="#222222">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                        <TableView fx:id="tablaVendedores" prefHeight="240.0">
+                            <columns>
+                                <TableColumn fx:id="colIdVendedor" text="Documento" prefWidth="130.0" />
+                                <TableColumn fx:id="colNombreVendedor" text="Nombre" prefWidth="200.0" />
+                                <TableColumn fx:id="colCargoVendedor" text="Cargo" prefWidth="150.0" />
+                            </columns>
+                        </TableView>
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <TextField fx:id="txtIdVendedor" promptText="Documento" prefWidth="120.0" />
+                            <TextField fx:id="txtNombreVendedor" promptText="Nombre" prefWidth="180.0" />
+                            <TextField fx:id="txtSalarioVendedor" promptText="Salario" prefWidth="120.0" />
+                            <ComboBox fx:id="comboCargoVendedor" promptText="Cargo" prefWidth="150.0" />
+                            <Button text="Guardar / Actualizar" onAction="#guardarVendedor" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                            <Button text="Eliminar" onAction="#eliminarVendedor" style="-fx-background-color: #1C1C1C; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                            <Button text="Limpiar" onAction="#limpiarCamposVendedor" style="-fx-background-color: #555555; -fx-text-fill: white; -fx-cursor: hand;" />
+                        </HBox>
+                    </VBox>
+                </Tab>
+
+                <!-- Pestaña: ClienteVendedor -->
+                <Tab text="Cliente - Vendedor">
+                    <VBox spacing="15.0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="Gestión de Cliente - Vendedor (Híbrido)" textFill="#222222">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                        <TableView fx:id="tablaClienteVendedor" prefHeight="240.0">
+                            <columns>
+                                <TableColumn fx:id="colIdCV" text="Documento" prefWidth="130.0" />
+                                <TableColumn fx:id="colNombreCV" text="Nombre" prefWidth="200.0" />
+                                <TableColumn fx:id="colCargoCV" text="Cargo" prefWidth="150.0" />
+                            </columns>
+                        </TableView>
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <TextField fx:id="txtIdCV" promptText="Documento" prefWidth="120.0" />
+                            <TextField fx:id="txtNombreCV" promptText="Nombre" prefWidth="200.0" />
+                            <ComboBox fx:id="comboCargoCV" promptText="Cargo" prefWidth="150.0" />
+                            <Button text="Guardar / Actualizar" onAction="#guardarClienteVendedor" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                            <Button text="Eliminar" onAction="#eliminarClienteVendedor" style="-fx-background-color: #1C1C1C; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                            <Button text="Limpiar" onAction="#limpiarCamposCV" style="-fx-background-color: #555555; -fx-text-fill: white; -fx-cursor: hand;" />
+                        </HBox>
+                    </VBox>
+                </Tab>
+
+                <!-- Pestaña: Ventas por Persona (Con opción de eliminar venta) -->
+                <Tab text="Ventas por Persona">
+                    <VBox spacing="15.0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="Historial de Ventas / Compras por Persona" textFill="#222222">
+                            <font><Font name="System Bold" size="16.0" /></font>
+                        </Label>
+                        <HBox spacing="15.0" alignment="CENTER_LEFT">
+                            <Label text="Seleccionar Persona:" textFill="#333333">
+                                <font><Font name="System Bold" size="12.0" /></font>
+                            </Label>
+                            <ComboBox fx:id="comboPersonas" promptText="Seleccione una persona" prefWidth="300.0" onAction="#cargarVentasPersona" />
+                        </HBox>
+                        <TableView fx:id="tablaVentasPersona" prefHeight="240.0">
+                            <columns>
+                                <TableColumn fx:id="colCodigoVenta" text="Código Venta" prefWidth="150.0" />
+                                <TableColumn fx:id="colFechaVenta" text="Fecha y Hora" prefWidth="220.0" />
+                                <TableColumn fx:id="colValorVenta" text="Valor Pagado" prefWidth="180.0" />
+                            </columns>
+                        </TableView>
+                        <HBox spacing="10.0">
+                            <Button text="Eliminar Venta Seleccionada" onAction="#eliminarVentaSeleccionada" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+                        </HBox>
+                    </VBox>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>

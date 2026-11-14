@@ -20,6 +20,9 @@ public class Cine {
     private List<Funcion> listaFunciones;
     private List<Sala> listaSalas;
     private List<Venta> listaVentas;
+    private List<Cliente> listaClientes;
+    private List<Vendedor> listaVendedores;
+    private List<ClienteVendedor> listaClienteVendedores;
 
     public Cine(int codigo, String nombre) {
         this.codigo = codigo;
@@ -29,6 +32,9 @@ public class Cine {
         listaFunciones = new ArrayList<>();
         listaSalas = new ArrayList<>();
         listaVentas = new ArrayList<>();
+        listaClientes = new ArrayList<>();
+        listaVendedores = new ArrayList<>();
+        listaClienteVendedores = new ArrayList<>();
     }
 
     public List<Funcion> getListaFunciones() {
@@ -85,6 +91,30 @@ public class Cine {
 
     public void setListaVentas(List<Venta> listaVentas) {
         this.listaVentas = listaVentas;
+    }
+
+    public List<Cliente> getListaClientes() {
+        return listaClientes;
+    }
+
+    public void setListaClientes(List<Cliente> listaClientes) {
+        this.listaClientes = listaClientes;
+    }
+
+    public List<Vendedor> getListaVendedores() {
+        return listaVendedores;
+    }
+
+    public void setListaVendedores(List<Vendedor> listaVendedores) {
+        this.listaVendedores = listaVendedores;
+    }
+
+    public List<ClienteVendedor> getListaClienteVendedores() {
+        return listaClienteVendedores;
+    }
+
+    public void setListaClienteVendedores(List<ClienteVendedor> listaClienteVendedores) {
+        this.listaClienteVendedores = listaClienteVendedores;
     }
 
     @Override
@@ -503,14 +533,14 @@ public class Cine {
     }
 
     // ==========================================
-// 6. GESTIÓN DE PERSONAS (CRUD)
-// ==========================================
+    // 6. GESTIÓN DE PERSONAS (CRUD)
+    // ==========================================
     public boolean registrarPersona(Persona persona) {
         if (persona != null && consultarPersona(persona.getDocumento()) == null) {
             listaPersonas.add(persona);
             return true;
         }
-        return false; // Ya existe una persona con ese documento
+        return false; // Ya existe una persona con ese documento o es nula
     }
 
     public Persona consultarPersona(int documento) {
@@ -525,7 +555,17 @@ public class Cine {
     public boolean modificarPersona(int documento, Persona personaActualizada) {
         Persona persona = consultarPersona(documento);
         if (persona != null && personaActualizada != null) {
+            // Actualizar nombre (común para todos)
             persona.setNombre(personaActualizada.getNombre());
+
+            // Si es un Vendedor o ClienteVendedor, actualizar también el cargo
+            if (persona instanceof Vendedor && personaActualizada instanceof Vendedor) {
+                ((Vendedor) persona).setCargo(((Vendedor) personaActualizada).getCargo());
+            }
+            if (persona instanceof ClienteVendedor && personaActualizada instanceof ClienteVendedor) {
+                ((ClienteVendedor) persona).setCargo(((ClienteVendedor) personaActualizada).getCargo());
+            }
+
             return true;
         }
         return false;
@@ -537,12 +577,8 @@ public class Cine {
             listaPersonas.remove(persona);
             return true;
         }
-        return false;
+        return false; // Retorno necesario para evitar errores de compilación
     }
-
-
-
-
 }
 
 //------------------DOCUMENTACIÓN DE LOS MÉTODOS-------------------------
