@@ -135,6 +135,7 @@ public class Cine {
             pelicula.setGenero(peliculaActualizada.getGenero());
             pelicula.setDuracion(peliculaActualizada.getDuracion());
             pelicula.setEstado(peliculaActualizada.getEstado());
+            pelicula.setClasificacion(peliculaActualizada.getClasificacion());
             estaActualizada = true;
         }
         return estaActualizada;
@@ -165,27 +166,26 @@ public class Cine {
         return agregada;
     }
 
-    public Sala consultarSala(int identificador) {
-        Sala sala0 = null;
+    public Sala consultarSala(int codigoSala) {
         for (Sala sala : listaSalas) {
-            if (sala.getCodigo() == identificador || sala.getNumero() == identificador) {
-                sala0 = sala;
-                break;
+            if (sala.getCodigo() == codigoSala) {
+                return sala;
             }
         }
-        return sala0;
+        return null;
     }
 
-    public boolean modificarSala(int numero, Sala salaActualizada) {
-        boolean estaActualizada= false;
-        Sala sala = consultarSala(numero);
-        if (sala != null) {
+    public boolean modificarSala(int codigoSala, Sala salaActualizada) {
+        Sala sala = consultarSala(codigoSala);
+        if (sala != null && salaActualizada != null) {
+            sala.setNumero(salaActualizada.getNumero());
             sala.setCapacidad(salaActualizada.getCapacidad());
             sala.setEstado(salaActualizada.getEstado());
             sala.setColeccionAsientos(salaActualizada.getColeccionAsientos());
-            estaActualizada= true;
+            sala.generarAsientos();
+            return true;
         }
-        return estaActualizada;
+        return false;
     }
 
     public boolean deshabilitarSala(int codigo) {
@@ -202,15 +202,16 @@ public class Cine {
     // 3. GESTIÓN DE FUNCIONES (CRUD)
     // ==========================================
     public boolean programarFuncion(Pelicula pelicula, Funcion nuevaFuncion) {
-        boolean programada = false;
         if (pelicula != null && nuevaFuncion != null && consultarFuncion(nuevaFuncion.getCodigo()) == null) {
-            if (nuevaFuncion.getSala() != null && nuevaFuncion.getSala().getEstado() == EstadoSala.DISPONIBLE) {
+            if ("ACTIVO".equalsIgnoreCase(pelicula.getEstado())
+                    && nuevaFuncion.getSala() != null
+                    && nuevaFuncion.getSala().getEstado() == EstadoSala.DISPONIBLE) {
                 listaFunciones.add(nuevaFuncion);
                 pelicula.getListaFunciones().add(nuevaFuncion);
-                programada = true;
+                return true;
             }
         }
-        return programada;
+        return false;
     }
 
     public Funcion consultarFuncion(int codigo) {
@@ -499,6 +500,44 @@ public class Cine {
             }
         }
         return totalIngresos;
+    }
+
+    // ==========================================
+// 6. GESTIÓN DE PERSONAS (CRUD)
+// ==========================================
+    public boolean registrarPersona(Persona persona) {
+        if (persona != null && consultarPersona(persona.getDocumento()) == null) {
+            listaPersonas.add(persona);
+            return true;
+        }
+        return false; // Ya existe una persona con ese documento
+    }
+
+    public Persona consultarPersona(int documento) {
+        for (Persona persona : listaPersonas) {
+            if (persona.getDocumento() == documento) {
+                return persona;
+            }
+        }
+        return null;
+    }
+
+    public boolean modificarPersona(int documento, Persona personaActualizada) {
+        Persona persona = consultarPersona(documento);
+        if (persona != null && personaActualizada != null) {
+            persona.setNombre(personaActualizada.getNombre());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean eliminarPersona(int documento) {
+        Persona persona = consultarPersona(documento);
+        if (persona != null) {
+            listaPersonas.remove(persona);
+            return true;
+        }
+        return false;
     }
 
 
