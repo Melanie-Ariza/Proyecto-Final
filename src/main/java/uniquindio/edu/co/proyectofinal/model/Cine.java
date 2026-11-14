@@ -351,6 +351,51 @@ public class Cine {
             }
         }
     }
+    public boolean eliminarVenta(Venta venta) {
+        if (venta == null || !listaVentas.contains(venta)) {
+            return false;
+        }
+
+        // 1. Eliminar de la lista global de ventas de la empresa
+        listaVentas.remove(venta);
+
+        // 2. Eliminar de la lista de compras del cliente
+        if (venta.getCliente() != null) {
+            Cliente cliente = venta.getCliente();
+            if (cliente instanceof ClienteVendedor) {
+                ((ClienteVendedor) cliente).getListaCompras().remove(venta);
+            } else {
+                cliente.getListaCompras().remove(venta);
+            }
+        }
+
+        // 3. Eliminar de la lista de ventas del vendedor (usando clases concretas)
+        // (Asegúrate de que getVendedor() sea el método en tu clase Venta que retorna al vendedor)
+        Object vendedorObj = venta.getVendedor();
+        if (vendedorObj != null) {
+            if (vendedorObj instanceof ClienteVendedor) {
+                ((ClienteVendedor) vendedorObj).getListaVentas().remove(venta);
+                ((ClienteVendedor) vendedorObj).getListaCompras().remove(venta);
+            } else if (vendedorObj instanceof Vendedor) {
+                ((Vendedor) vendedorObj).getListaVentas().remove(venta);
+            }
+        }
+
+        // 4. Liberar el asiento asociado para que vuelva a estar DISPONIBLE en la sala
+        if (venta.getListaDetalles() != null) {
+            for (DetalleVenta detalle : venta.getListaDetalles()) {
+                if (detalle.getListaEntradas() != null) {
+                    for (Entrada entrada : detalle.getListaEntradas()) {
+                        if (entrada.getAsiento() != null) {
+                            entrada.getAsiento().setEstado(EstadoAsiento.DISPONIBLE);
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
 
     // Sobrecarga para cancelar venta buscando por su código
     public void cancelarVenta(int codigoVenta) {
