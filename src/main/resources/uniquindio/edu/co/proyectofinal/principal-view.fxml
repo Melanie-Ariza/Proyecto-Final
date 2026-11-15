@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane fx:id="borderPanePrincipal" prefHeight="720.0" prefWidth="1024.0" style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.viewController.PrincipalViewController">
+<BorderPane fx:id="borderPanePrincipal" prefHeight="720.0" prefWidth="1024.0" style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.viewController.PrincipalViewController">
 
     <!-- BARRA SUPERIOR ESTILO CINEMARK -->
     <top>
@@ -58,15 +48,16 @@
 
                         <Separator orientation="VERTICAL" prefHeight="40.0" />
 
-                        <Button fx:id="btnGestionPeliculas" mnemonicParsing="false" onAction="#mostrarGestionPeliculas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="PELÍCULAS" textFill="#333333" />
                         <Button fx:id="btnCartelera" mnemonicParsing="false" onAction="#mostrarCartelera" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="CARTELERA" textFill="#333333" />
                         <Button fx:id="btnVentas" mnemonicParsing="false" onAction="#mostrarVentas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="VENTA DE BOLETAS" textFill="#333333" />
                         <Button fx:id="btnSalas" mnemonicParsing="false" onAction="#mostrarSalas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="SALAS Y ASIENTOS" textFill="#333333" />
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
                         <Button fx:id="btnPersonas" mnemonicParsing="false" onAction="#mostrarGestionPersonas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="GESTIÓN PERSONAS" textFill="#333333">
                             <padding>
                                 <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
                             </padding>
                         </Button>
+                        <Button fx:id="btnGestionPeliculas" mnemonicParsing="false" onAction="#mostrarGestionPeliculas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="GESTIÓN PELÍCULAS" textFill="#333333" />
                         <Button fx:id="btnReportes" mnemonicParsing="false" onAction="#mostrarReportes" style="-fx-background-color: #C8102E; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;" text="REPORTES ADMIN" textFill="WHITE">
                             <padding>
                                 <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
