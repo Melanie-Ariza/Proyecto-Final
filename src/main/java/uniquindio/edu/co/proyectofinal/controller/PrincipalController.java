@@ -35,14 +35,4 @@ public class PrincipalController {
     public Pelicula obtenerPeliculaMasVendida() {
         return cine.identificarPeliculaMasVendida();
     }
-
-    public boolean programarNuevaFuncion(Pelicula pelicula, Sala sala, LocalDate fecha, LocalTime hora, double valorBase) {
-        int codigoFuncion = cine.getListaFunciones().size() + 1;
-        Funcion nuevaFuncion = new Funcion(codigoFuncion, pelicula, sala, hora, fecha, valorBase, EstadoFuncion.PROGRAMADA);
-        return cine.programarFuncion(pelicula, nuevaFuncion);
-    }
-
-    public List<Funcion> consultarFuncionesPorFecha(LocalDate fecha) {
-        return cine.consultarFuncionesPorFecha(fecha);
-    }
 }

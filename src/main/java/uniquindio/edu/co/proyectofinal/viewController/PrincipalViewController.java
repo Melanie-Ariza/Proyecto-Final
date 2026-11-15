@@ -1,23 +1,16 @@
 package uniquindio.edu.co.proyectofinal.viewController;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import uniquindio.edu.co.proyectofinal.controller.PrincipalController;
 import uniquindio.edu.co.proyectofinal.model.*;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 
 public class PrincipalViewController {
 
@@ -26,34 +19,24 @@ public class PrincipalViewController {
     @FXML private Label lblPeliculaMasVendida;
     @FXML private Label lblDetallePeliculaTop;
 
-    @FXML private ComboBox<Pelicula> cmbPeliculaProg;
-    @FXML private ComboBox<Sala> cmbSalaProg;
-    @FXML private DatePicker datePickerProg;
-    @FXML private TextField txtHoraProg;
-    @FXML private TextField txtValorProg;
-
-    @FXML private DatePicker datePickerFunciones;
-    @FXML private TableView<Funcion> tablaFuncionesFecha;
-    @FXML private TableColumn<Funcion, Integer> colCodigoFuncion;
-    @FXML private TableColumn<Funcion, String> colPeliculaFuncion;
-    @FXML private TableColumn<Funcion, String> colSalaFuncion;
-    @FXML private TableColumn<Funcion, String> colHoraFuncion;
-    @FXML private TableColumn<Funcion, String> colEstadoFuncion;
-
     @FXML private BorderPane borderPanePrincipal;
-    @FXML private Button btnVentas;
-    @FXML private Button btnReportes;
     @FXML private Button btnCartelera;
+    @FXML private Button btnFunciones;
+    @FXML private Button btnVentas;
     @FXML private Button btnSalas;
     @FXML private Button btnPersonas;
-    @FXML private Button btnSalir;
     @FXML private Button btnGestionPeliculas;
+    @FXML private Button btnReportes;
+    @FXML private Button btnSalir;
 
     private Node vistaReportesInicial;
     private PrincipalController principalController;
 
     private Parent nodoCartelera;
     private CarteleraViewController carteleraViewController;
+
+    private Parent nodoFunciones;
+    private FuncionViewController funcionViewController;
 
     private Parent nodoVentas;
     private VentaViewController ventaViewController;
@@ -69,52 +52,12 @@ public class PrincipalViewController {
         this.principalController = new PrincipalController();
         this.vistaReportesInicial = borderPanePrincipal.getCenter();
 
-        configurarTablaFunciones();
-        datePickerFunciones.setValue(LocalDate.now());
-        datePickerProg.setValue(LocalDate.now());
-
-        cmbPeliculaProg.setConverter(new StringConverter<Pelicula>() {
-            @Override
-            public String toString(Pelicula p) { return (p == null) ? "" : p.getNombre() + " (" + p.getGenero() + ")"; }
-            @Override
-            public Pelicula fromString(String string) { return null; }
-        });
-
-        cmbSalaProg.setConverter(new StringConverter<Sala>() {
-            @Override
-            public String toString(Sala s) { return (s == null) ? "" : "Sala #" + s.getNumero() + " - " + s.getColeccionAsientos() + " (Cap: " + s.getCapacidad() + ")"; }
-            @Override
-            public Sala fromString(String string) { return null; }
-        });
-
-        cargarCombosProgramacion();
         actualizarDatosEnPantalla();
-    }
-
-    private void configurarTablaFunciones() {
-        colCodigoFuncion.setCellValueFactory(new PropertyValueFactory<>("codigo"));
-        colPeliculaFuncion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPelicula().getNombre()));
-        colSalaFuncion.setCellValueFactory(cellData -> new SimpleStringProperty("Sala #" + cellData.getValue().getSala().getNumero()));
-        colHoraFuncion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getHora().toString()));
-        colEstadoFuncion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEstadoFuncion().toString()));
-    }
-
-    public void cargarCombosProgramacion() {
-        if (principalController != null) {
-            if (cmbPeliculaProg != null) {
-                cmbPeliculaProg.setItems(FXCollections.observableArrayList(principalController.obtenerPeliculasDisponibles()));
-            }
-            if (cmbSalaProg != null) {
-                cmbSalaProg.setItems(FXCollections.observableArrayList(principalController.obtenerSalas()));
-            }
-        }
     }
 
     @FXML
     void actualizarReportes(ActionEvent event) {
-        cargarCombosProgramacion();
         actualizarDatosEnPantalla();
-        consultarFuncionesPorFecha(null);
     }
 
     private void actualizarDatosEnPantalla() {
@@ -134,53 +77,34 @@ public class PrincipalViewController {
     }
 
     @FXML
-    void guardarNuevaFuncion(ActionEvent event) {
+    void mostrarCartelera(ActionEvent event) {
         try {
-            Pelicula peliculaSeleccionada = cmbPeliculaProg.getValue();
-            Sala salaSeleccionada = cmbSalaProg.getValue();
-            LocalDate fecha = datePickerProg.getValue();
-            String horaTexto = txtHoraProg.getText().trim();
-            String valorTexto = txtValorProg.getText().trim();
-
-            if (peliculaSeleccionada == null || salaSeleccionada == null || fecha == null || horaTexto.isEmpty() || valorTexto.isEmpty()) {
-                mostrarAlerta("Campos Incompletos", "Por favor completa todos los campos para programar la función.", Alert.AlertType.WARNING);
-                return;
+            if (nodoCartelera == null) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/cartelera-view.fxml"));
+                nodoCartelera = loader.load();
+                carteleraViewController = loader.getController();
             }
-
-            boolean programada = principalController.programarNuevaFuncion(
-                    peliculaSeleccionada, salaSeleccionada, fecha, LocalTime.parse(horaTexto), Double.parseDouble(valorTexto)
-            );
-
-            if (programada) {
-                mostrarAlerta("Éxito", "¡Función programada con éxito!", Alert.AlertType.INFORMATION);
-                txtHoraProg.clear();
-                txtValorProg.clear();
-                cmbPeliculaProg.setValue(null);
-                cmbSalaProg.setValue(null);
-                datePickerFunciones.setValue(fecha);
-                consultarFuncionesPorFecha(null);
-                actualizarDatosEnPantalla();
-            } else {
-                mostrarAlerta("Error", "No se pudo programar. Verifique que la sala esté disponible y la película activa.", Alert.AlertType.ERROR);
-            }
-
-        } catch (DateTimeParseException e) {
-            mostrarAlerta("Formato de Hora Inválido", "Ingrese la hora en formato correcto, por ejemplo: 18:30", Alert.AlertType.ERROR);
-        } catch (NumberFormatException e) {
-            mostrarAlerta("Valor Inválido", "El valor base debe ser un número válido.", Alert.AlertType.ERROR);
-        } catch (Exception e) {
-            mostrarAlerta("Error", "Ocurrió un error: " + e.getMessage(), Alert.AlertType.ERROR);
+            carteleraViewController.setCine(principalController.getCine());
+            borderPanePrincipal.setCenter(nodoCartelera);
+            activarBotonMenuPersonalizado(btnCartelera);
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo cargar la cartelera: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     @FXML
-    void consultarFuncionesPorFecha(ActionEvent event) {
-        if (principalController != null && datePickerFunciones.getValue() != null) {
-            tablaFuncionesFecha.setItems(FXCollections.observableArrayList(
-                    principalController.consultarFuncionesPorFecha(datePickerFunciones.getValue())
-            ));
-        } else {
-            mostrarAlerta("Fecha requerida", "Por favor selecciona una fecha para consultar las funciones.", Alert.AlertType.WARNING);
+    void mostrarFunciones(ActionEvent event) {
+        try {
+            if (nodoFunciones == null) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/funcion-view.fxml"));
+                nodoFunciones = loader.load();
+                funcionViewController = loader.getController();
+            }
+            funcionViewController.setCine(principalController.getCine());
+            borderPanePrincipal.setCenter(nodoFunciones);
+            activarBotonMenuPersonalizado(btnFunciones);
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo cargar la vista de funciones: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -197,31 +121,6 @@ public class PrincipalViewController {
             activarBotonMenuPersonalizado(btnVentas);
         } catch (IOException e) {
             mostrarAlerta("Error", "No se pudo cargar la ventana de ventas: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    @FXML
-    void mostrarReportes(ActionEvent event) {
-        borderPanePrincipal.setCenter(vistaReportesInicial);
-        actualizarDatosEnPantalla();
-        cargarCombosProgramacion();
-        consultarFuncionesPorFecha(null);
-        activarBotonMenuPersonalizado(btnReportes);
-    }
-
-    @FXML
-    void mostrarCartelera(ActionEvent event) {
-        try {
-            if (nodoCartelera == null) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/cartelera-view.fxml"));
-                nodoCartelera = loader.load();
-                carteleraViewController = loader.getController();
-            }
-            carteleraViewController.setCine(principalController.getCine());
-            borderPanePrincipal.setCenter(nodoCartelera);
-            activarBotonMenuPersonalizado(btnCartelera);
-        } catch (IOException e) {
-            mostrarAlerta("Error", "No se pudo cargar la cartelera: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -269,13 +168,20 @@ public class PrincipalViewController {
     }
 
     @FXML
+    void mostrarReportes(ActionEvent event) {
+        borderPanePrincipal.setCenter(vistaReportesInicial);
+        actualizarDatosEnPantalla();
+        activarBotonMenuPersonalizado(btnReportes);
+    }
+
+    @FXML
     void salirAplicacion(ActionEvent event) {
         Stage stage = (Stage) borderPanePrincipal.getScene().getWindow();
         stage.close();
     }
 
     private void activarBotonMenuPersonalizado(Button botonActivo) {
-        Button[] botones = {btnGestionPeliculas, btnCartelera, btnVentas, btnSalas, btnPersonas, btnReportes};
+        Button[] botones = {btnGestionPeliculas, btnCartelera, btnFunciones, btnVentas, btnSalas, btnPersonas, btnReportes};
         for (Button b : botones) {
             if (b != null) {
                 if (b == botonActivo) {

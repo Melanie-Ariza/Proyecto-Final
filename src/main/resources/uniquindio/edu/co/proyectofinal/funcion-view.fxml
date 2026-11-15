@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="20.0" style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.viewController.FuncionViewController">
+    <padding>
+        <Insets bottom="30.0" left="35.0" right="35.0" top="30.0" />
+    </padding>
+    <children>
+        <Label text="GESTIÓN Y PROGRAMACIÓN DE FUNCIONES" textFill="#222222">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+
+        <!-- Formulario de Registro / Modificación -->
+        <VBox spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 6; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 6, 0, 0, 2);">
+            <children>
+                <Label text="Detalles de la Función" textFill="#C8102E">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <HBox spacing="15.0">
+                    <children>
+                        <VBox prefWidth="100.0" spacing="5.0">
+                            <children>
+                                <Label text="Código:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <TextField fx:id="txtCodigo" editable="false" promptText="Auto" style="-fx-background-color: #E9ECEF;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Película (Disponibles):" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <ComboBox fx:id="cmbPelicula" maxWidth="1.7976931348623157E308" promptText="Seleccionar película" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Sala:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <ComboBox fx:id="cmbSala" maxWidth="1.7976931348623157E308" promptText="Seleccionar sala" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <HBox spacing="15.0">
+                    <children>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Fecha:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <DatePicker fx:id="datePickerFecha" maxWidth="1.7976931348623157E308" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Hora (HH:mm):" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <TextField fx:id="txtHora" promptText="Ej: 18:30" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Valor Base ($):" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <TextField fx:id="txtValor" promptText="Ej: 15000" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Estado:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                                <ComboBox fx:id="cmbEstado" maxWidth="1.7976931348623157E308" promptText="Seleccionar estado" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#guardarFuncion" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="Programar " />
+                        <Button mnemonicParsing="false" onAction="#modificarFuncion" style="-fx-background-color: #1C1C1C; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="Actualizar Seleccionada" />
+                        <Button mnemonicParsing="false" onAction="#limpiarCampos" style="-fx-background-color: #555555; -fx-text-fill: white; -fx-cursor: hand;" text="Limpiar" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- Filtro y Tabla -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <children>
+                <Label text="Filtrar por Fecha:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
+                <DatePicker fx:id="datePickerConsulta" promptText="Selecciona una fecha" />
+                <Button mnemonicParsing="false" onAction="#consultarPorFecha" style="-fx-background-color: #1C1C1C; -fx-font-weight: bold; -fx-cursor: hand;" text="BUSCAR" textFill="WHITE" />
+                <Button mnemonicParsing="false" onAction="#cargarDatos" style="-fx-background-color: #555555; -fx-font-weight: bold; -fx-cursor: hand;" text="VER TODAS" textFill="WHITE" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tablaFunciones" prefHeight="250.0" style="-fx-background-radius: 6;">
+            <columns>
+                <TableColumn fx:id="colCodigo" prefWidth="70.0" text="Código" />
+                <TableColumn fx:id="colPelicula" prefWidth="200.0" text="Película" />
+                <TableColumn fx:id="colSala" prefWidth="100.0" text="Sala" />
+                <TableColumn fx:id="colFecha" prefWidth="110.0" text="Fecha" />
+                <TableColumn fx:id="colHora" prefWidth="90.0" text="Hora" />
+                <TableColumn fx:id="colValor" prefWidth="110.0" text="Valor" />
+                <TableColumn fx:id="colEstado" prefWidth="120.0" text="Estado" />
+                <TableColumn fx:id="colAsientosDisponibles" prefWidth="130.0" text="Asientos Libres" />
+            </columns>
+        </TableView>
+    </children>
+</VBox>

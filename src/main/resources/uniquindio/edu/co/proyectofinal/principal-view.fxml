@@ -49,6 +49,7 @@
                         <Separator orientation="VERTICAL" prefHeight="40.0" />
 
                         <Button fx:id="btnCartelera" mnemonicParsing="false" onAction="#mostrarCartelera" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="CARTELERA" textFill="#333333" />
+                        <Button fx:id="btnFunciones" mnemonicParsing="false" onAction="#mostrarFunciones" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="FUNCIONES" textFill="#333333" />
                         <Button fx:id="btnVentas" mnemonicParsing="false" onAction="#mostrarVentas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="VENTA DE BOLETAS" textFill="#333333" />
                         <Button fx:id="btnSalas" mnemonicParsing="false" onAction="#mostrarSalas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="SALAS Y ASIENTOS" textFill="#333333" />
                         <Button fx:id="btnPersonas" mnemonicParsing="false" onAction="#mostrarGestionPersonas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="GESTIÓN PERSONAS" textFill="#333333">
@@ -180,113 +181,6 @@
                             </children>
                         </HBox>
 
-                        <Separator prefWidth="200.0" />
-
-                        <!-- Sección: Programar Nueva Función -->
-                        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.10), 8, 0, 0, 2);">
-                            <padding>
-                                <Insets bottom="22.0" left="22.0" right="22.0" top="22.0" />
-                            </padding>
-                            <children>
-                                <Label text="PROGRAMAR NUEVA FUNCIÓN" textFill="#222222">
-                                    <font>
-                                        <Font name="System Bold" size="15.0" />
-                                    </font>
-                                </Label>
-
-                                <HBox spacing="15.0">
-                                    <children>
-                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                            <children>
-                                                <Label text="Película:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
-                                                <ComboBox fx:id="cmbPeliculaProg" maxWidth="1.7976931348623157E308" promptText="Seleccionar película activa" />
-                                            </children>
-                                        </VBox>
-                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                            <children>
-                                                <Label text="Sala:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
-                                                <ComboBox fx:id="cmbSalaProg" maxWidth="1.7976931348623157E308" promptText="Seleccionar sala disponible" />
-                                            </children>
-                                        </VBox>
-                                    </children>
-                                </HBox>
-
-                                <HBox spacing="15.0">
-                                    <children>
-                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                            <children>
-                                                <Label text="Fecha de la Función:" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
-                                                <DatePicker fx:id="datePickerProg" maxWidth="1.7976931348623157E308" promptText="Seleccionar fecha" />
-                                            </children>
-                                        </VBox>
-                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                            <children>
-                                                <Label text="Hora (Formato HH:mm):" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
-                                                <TextField fx:id="txtHoraProg" maxWidth="1.7976931348623157E308" promptText="Ej: 18:30" />
-                                            </children>
-                                        </VBox>
-                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                            <children>
-                                                <Label text="Valor Base ($):" textFill="#444444"><font><Font name="System Bold" size="12.0" /></font></Label>
-                                                <TextField fx:id="txtValorProg" maxWidth="1.7976931348623157E308" promptText="Ej: 15000" />
-                                            </children>
-                                        </VBox>
-                                    </children>
-                                </HBox>
-
-                                <HBox spacing="10.0">
-                                    <children>
-                                        <Button mnemonicParsing="false" onAction="#guardarNuevaFuncion" style="-fx-background-color: #C8102E; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="PROGRAMAR FUNCIÓN" textFill="WHITE">
-                                            <padding>
-                                                <Insets bottom="9.0" left="22.0" right="22.0" top="9.0" />
-                                            </padding>
-                                        </Button>
-                                    </children>
-                                </HBox>
-                            </children>
-                        </VBox>
-
-                        <Separator prefWidth="200.0" />
-
-                        <!-- Sección: Consulta de Funciones por Fecha -->
-                        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.10), 8, 0, 0, 2);">
-                            <padding>
-                                <Insets bottom="22.0" left="22.0" right="22.0" top="22.0" />
-                            </padding>
-                            <children>
-                                <Label text="CONSULTAR FUNCIONES PROGRAMADAS POR FECHA" textFill="#222222">
-                                    <font>
-                                        <Font name="System Bold" size="15.0" />
-                                    </font>
-                                </Label>
-
-                                <HBox alignment="CENTER_LEFT" spacing="12.0">
-                                    <children>
-                                        <Label text="Seleccionar fecha:" textFill="#444444">
-                                            <font>
-                                                <Font name="System Bold" size="12.0" />
-                                            </font>
-                                        </Label>
-                                        <DatePicker fx:id="datePickerFunciones" promptText="Elige una fecha" />
-                                        <Button mnemonicParsing="false" onAction="#consultarFuncionesPorFecha" style="-fx-background-color: #1C1C1C; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="BUSCAR FUNCIONES" textFill="WHITE">
-                                            <padding>
-                                                <Insets bottom="7.0" left="18.0" right="18.0" top="7.0" />
-                                            </padding>
-                                        </Button>
-                                    </children>
-                                </HBox>
-
-                                <TableView fx:id="tablaFuncionesFecha" prefHeight="210.0">
-                                    <columns>
-                                        <TableColumn fx:id="colCodigoFuncion" prefWidth="90.0" text="Código" />
-                                        <TableColumn fx:id="colPeliculaFuncion" prefWidth="280.0" text="Película" />
-                                        <TableColumn fx:id="colSalaFuncion" prefWidth="150.0" text="Sala" />
-                                        <TableColumn fx:id="colHoraFuncion" prefWidth="130.0" text="Hora" />
-                                        <TableColumn fx:id="colEstadoFuncion" prefWidth="160.0" text="Estado" />
-                                    </columns>
-                                </TableView>
-                            </children>
-                        </VBox>
                     </children>
                 </VBox>
             </content>
