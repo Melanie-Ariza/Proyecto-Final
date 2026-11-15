@@ -25,14 +25,16 @@ public class GestionPeliculasViewController {
     @FXML private TextField txtNombre;
     @FXML private TextField txtGenero;
     @FXML private TextField txtDuracion;
-    @FXML private TextField txtEstado;
+
     @FXML private ComboBox<Clasificacion> comboClasificacion;
+    @FXML private ComboBox<String> comboEstado;
 
     private GestionPeliculasController gestionPeliculasController;
 
     public void setCine(Cine cine) {
         this.gestionPeliculasController = new GestionPeliculasController(cine);
         actualizarTabla();
+        generarNuevoCodigoAutomatico();
     }
 
     @FXML
@@ -44,8 +46,14 @@ public class GestionPeliculasViewController {
         colClasificacion.setCellValueFactory(new PropertyValueFactory<>("clasificacion"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
 
+        // Llenar ComboBox de Clasificación y Estado
         comboClasificacion.setItems(FXCollections.observableArrayList(Clasificacion.values()));
+        comboEstado.setItems(FXCollections.observableArrayList("ACTIVO", "NO_DISPONIBLE"));
+        comboEstado.setValue("ACTIVO"); // Valor por defecto
 
+        txtCodigo.setEditable(false);
+
+        // Listener para la selección en la tabla
         tablaPeliculas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, peliculaSeleccionada) -> {
             if (peliculaSeleccionada != null) {
                 txtCodigo.setText(String.valueOf(peliculaSeleccionada.getCodigo()));
@@ -53,7 +61,7 @@ public class GestionPeliculasViewController {
                 txtGenero.setText(peliculaSeleccionada.getGenero());
                 txtDuracion.setText(String.valueOf(peliculaSeleccionada.getDuracion()));
                 comboClasificacion.setValue(peliculaSeleccionada.getClasificacion());
-                txtEstado.setText(peliculaSeleccionada.getEstado());
+                comboEstado.setValue(peliculaSeleccionada.getEstado());
             }
         });
     }
@@ -65,32 +73,41 @@ public class GestionPeliculasViewController {
         }
     }
 
+    private void generarNuevoCodigoAutomatico() {
+        if (gestionPeliculasController != null) {
+            int nuevoCodigo = gestionPeliculasController.obtenerSiguienteCodigo();
+            txtCodigo.setText(String.valueOf(nuevoCodigo));
+        }
+    }
+
     @FXML
     void registrarPelicula(ActionEvent event) {
         try {
-            if (txtCodigo.getText().isEmpty() || txtNombre.getText().isEmpty() || txtGenero.getText().isEmpty()
-                    || txtDuracion.getText().isEmpty() || comboClasificacion.getValue() == null) {
+            if (txtNombre.getText().isEmpty() || txtGenero.getText().isEmpty()
+                    || txtDuracion.getText().isEmpty() || comboClasificacion.getValue() == null || comboEstado.getValue() == null) {
                 mostrarAlerta("Campos Incompletos", "Por favor completa todos los campos para registrar la película.", Alert.AlertType.WARNING);
                 return;
             }
 
+            int codigoAuto = Integer.parseInt(txtCodigo.getText().trim());
+
             gestionPeliculasController.registrarPelicula(
-                    Integer.parseInt(txtCodigo.getText().trim()),
+                    codigoAuto,
                     txtNombre.getText().trim(),
                     txtGenero.getText().trim(),
                     Integer.parseInt(txtDuracion.getText().trim()),
                     comboClasificacion.getValue(),
-                    txtEstado.getText().trim()
+                    comboEstado.getValue()
             );
 
-            mostrarAlerta("Éxito", "¡Película registrada correctamente en el sistema!", Alert.AlertType.INFORMATION);
+            mostrarAlerta("Éxito", "¡Película registrada correctamente con el código " + codigoAuto + "!", Alert.AlertType.INFORMATION);
             actualizarTabla();
             limpiarCampos(null);
 
         } catch (PeliculaDuplicadaException e) {
             mostrarAlerta("Película Duplicada", e.getMessage(), Alert.AlertType.WARNING);
         } catch (NumberFormatException e) {
-            mostrarAlerta("Formato Inválido", "El código y la duración deben ser números enteros válidos.", Alert.AlertType.ERROR);
+            mostrarAlerta("Formato Inválido", "La duración debe ser un número entero válido.", Alert.AlertType.ERROR);
         } catch (Exception e) {
             mostrarAlerta("Error", "Ocurrió un error inesperado: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -105,7 +122,7 @@ public class GestionPeliculasViewController {
                 return;
             }
 
-            if (txtNombre.getText().isEmpty() || txtGenero.getText().isEmpty() || txtDuracion.getText().isEmpty() || comboClasificacion.getValue() == null) {
+            if (txtNombre.getText().isEmpty() || txtGenero.getText().isEmpty() || txtDuracion.getText().isEmpty() || comboClasificacion.getValue() == null || comboEstado.getValue() == null) {
                 mostrarAlerta("Campos Incompletos", "Por favor complete todos los campos de la película.", Alert.AlertType.WARNING);
                 return;
             }
@@ -116,7 +133,7 @@ public class GestionPeliculasViewController {
                     txtGenero.getText().trim(),
                     Integer.parseInt(txtDuracion.getText().trim()),
                     comboClasificacion.getValue(),
-                    txtEstado.getText().trim()
+                    comboEstado.getValue()
             );
 
             if (actualizada) {
@@ -152,11 +169,11 @@ public class GestionPeliculasViewController {
 
     @FXML
     void limpiarCampos(ActionEvent event) {
-        txtCodigo.clear();
+        generarNuevoCodigoAutomatico();
         txtNombre.clear();
         txtGenero.clear();
         txtDuracion.clear();
-        txtEstado.setText("ACTIVO");
+        comboEstado.setValue("ACTIVO");
         comboClasificacion.setValue(null);
         tablaPeliculas.getSelectionModel().clearSelection();
     }

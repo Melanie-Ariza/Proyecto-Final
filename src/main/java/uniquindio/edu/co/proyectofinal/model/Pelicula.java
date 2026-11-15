@@ -13,13 +13,13 @@ public class Pelicula {
     private Clasificacion clasificacion;
     private String imagenRuta;
 
-    public Pelicula(int codigo, String nombre, String genero, int duracion, String estado, List<Funcion> listaFunciones, Clasificacion clasificacion, String imagenRuta) {
+    public Pelicula(int codigo, String nombre, String genero, int duracion, String estado, Clasificacion clasificacion, String imagenRuta) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.genero = genero;
         this.duracion = duracion;
         this.estado = estado;
-        this.listaFunciones = new ArrayList<>();
+        listaFunciones = new ArrayList<>();
         this.clasificacion = clasificacion;
         this.imagenRuta = imagenRuta;
     }

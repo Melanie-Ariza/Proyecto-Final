@@ -27,8 +27,8 @@ public class VentaController {
             cine.registrarSala(sala1);
             cine.registrarSala(salaVip);
 
-            Pelicula peli1 = new Pelicula(101, "Rocky", "Drama / Acción", 130, "ACTIVO", new ArrayList<>(), Clasificacion.MAYORES_12, "/uniquindio/edu/co/proyectofinal/images/rocky.jpg");
-            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", new ArrayList<>(), Clasificacion.TODOS, "/uniquindio/edu/co/proyectofinal/images/encanto.gif");
+            Pelicula peli1 = new Pelicula(101, "Rocky", "Drama / Acción", 130, "ACTIVO", Clasificacion.MAYORES_12, "/uniquindio/edu/co/proyectofinal/images/rocky.jpg");
+            Pelicula peli2 = new Pelicula(102, "Encanto", "Animación", 102, "ACTIVO", Clasificacion.TODOS, "/uniquindio/edu/co/proyectofinal/images/encanto.gif");
 
             cine.registrarPelicula(peli1);
             cine.registrarPelicula(peli2);

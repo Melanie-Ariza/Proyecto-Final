@@ -33,10 +33,10 @@
                     </columns>
                 </TableView>
 
-                <!-- Formulario de Modificación y Acciones -->
+                <!-- Formulario de Registro / Modificación y Acciones -->
                 <VBox spacing="12.0">
                     <children>
-                        <Label text="Modificar o Administrar Película Seleccionada" textFill="#333333">
+                        <Label text="Registrar o Administrar Película" textFill="#333333">
                             <font><Font name="System Bold" size="14.0" /></font>
                         </Label>
 
@@ -44,8 +44,8 @@
                             <children>
                                 <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Label text="Código:" textFill="#555555"><font><Font size="11.0" /></font></Label>
-                                        <TextField fx:id="txtCodigo" promptText="Código" editable="false" />
+                                        <Label text="Código (Automático):" textFill="#555555"><font><Font size="11.0" /></font></Label>
+                                        <TextField fx:id="txtCodigo" promptText="Auto-generado" editable="false" style="-fx-background-color: #E9ECEF;" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="4.0" HBox.hgrow="ALWAYS">
@@ -80,7 +80,7 @@
                                 <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label text="Estado:" textFill="#555555"><font><Font size="11.0" /></font></Label>
-                                        <TextField fx:id="txtEstado" promptText="ACTIVO / NO_DISPONIBLE" />
+                                        <ComboBox fx:id="comboEstado" maxWidth="1.7976931348623157E308" promptText="Seleccionar estado" />
                                     </children>
                                 </VBox>
                             </children>
@@ -89,10 +89,13 @@
                         <!-- Botones de Acción -->
                         <HBox spacing="12.0" alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;">
                             <children>
+                                <Button mnemonicParsing="false" onAction="#registrarPelicula" style="-fx-background-color: #28A745; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="REGISTRAR PELÍCULA" textFill="WHITE">
+                                    <padding><Insets bottom="8.0" left="16.0" right="16.0" top="8.0" /></padding>
+                                </Button>
                                 <Button mnemonicParsing="false" onAction="#modificarPelicula" style="-fx-background-color: #C8102E; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="MODIFICAR PELÍCULA" textFill="WHITE">
                                     <padding><Insets bottom="8.0" left="16.0" right="16.0" top="8.0" /></padding>
                                 </Button>
-                                <Button mnemonicParsing="false" onAction="#deshabilitarPelicula" style="-fx-background-color: #1C1C1C; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="DESHABILITAR (DAR DE BAJA)" textFill="WHITE">
+                                <Button mnemonicParsing="false" onAction="#deshabilitarPelicula" style="-fx-background-color: #1C1C1C; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="DESHABILITAR" textFill="WHITE">
                                     <padding><Insets bottom="8.0" left="16.0" right="16.0" top="8.0" /></padding>
                                 </Button>
                                 <Button mnemonicParsing="false" onAction="#limpiarCampos" style="-fx-background-color: #555555; -fx-background-radius: 4; -fx-font-weight: bold; -fx-cursor: hand;" text="LIMPIAR" textFill="WHITE">

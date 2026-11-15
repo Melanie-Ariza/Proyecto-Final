@@ -17,16 +17,30 @@ public class GestionPeliculasController {
         return (cine != null) ? cine.getListaPeliculas() : new ArrayList<>();
     }
 
+    /**
+     * Calcula de forma automática el siguiente código entero disponible para una nueva película.
+     */
+    public int obtenerSiguienteCodigo() {
+        int max = 0;
+        List<Pelicula> peliculas = obtenerPeliculas();
+        if (peliculas != null) {
+            for (Pelicula p : peliculas) {
+                if (p.getCodigo() > max) {
+                    max = p.getCodigo();
+                }
+            }
+        }
+        return max + 1;
+    }
+
     public boolean registrarPelicula(int codigo, String nombre, String genero, int duracion, Clasificacion clasificacion, String estado) {
         String estadoFinal = (estado == null || estado.isEmpty()) ? "ACTIVO" : estado;
-        Pelicula nueva = new Pelicula(codigo, nombre, genero, duracion, estadoFinal,
-                new ArrayList<>(), clasificacion, "/uniquindio/edu/co/proyectofinal/images/default.jpg");
+        Pelicula nueva = new Pelicula(codigo, nombre, genero, duracion, estadoFinal, clasificacion, "/uniquindio/edu/co/proyectofinal/images/default.jpg");
         return cine.registrarPelicula(nueva);
     }
 
     public boolean modificarPelicula(Pelicula original, String nombre, String genero, int duracion, Clasificacion clasificacion, String estado) {
-        Pelicula actualizada = new Pelicula(original.getCodigo(), nombre, genero, duracion, estado,
-                original.getListaFunciones(), clasificacion, original.getImagenRuta());
+        Pelicula actualizada = new Pelicula(original.getCodigo(), nombre, genero, duracion, estado, clasificacion, original.getImagenRuta());
         return cine.modificarPelicula(original.getCodigo(), actualizada);
     }
 
