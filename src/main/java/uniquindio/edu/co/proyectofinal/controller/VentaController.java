@@ -22,8 +22,8 @@ public class VentaController {
         }
 
         if (cine != null && cine.getListaFunciones().isEmpty()) {
-            Sala sala1 = new Sala(1, 1, 20, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
-            Sala salaVip = new Sala(2, 2, 15, EstadoSala.DISPONIBLE, ColeccionAsientos.VIP);
+            Sala sala1 = new Sala(1, 1, 80, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
+            Sala salaVip = new Sala(2, 2, 60, EstadoSala.DISPONIBLE, ColeccionAsientos.VIP);
             cine.registrarSala(sala1);
             cine.registrarSala(salaVip);
 
