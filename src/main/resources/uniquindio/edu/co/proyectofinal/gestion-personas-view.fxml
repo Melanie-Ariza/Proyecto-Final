@@ -88,7 +88,7 @@
                     </VBox>
                 </Tab>
 
-                <!-- Pestaña: Ventas por Persona (Con opción de eliminar venta) -->
+                <!-- Pestaña: Ventas por Persona (Con opción de cancelar venta) -->
                 <Tab text="Ventas por Persona">
                     <VBox spacing="15.0">
                         <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
@@ -101,7 +101,11 @@
                             </Label>
                             <ComboBox fx:id="comboPersonas" onAction="#cargarVentasPersona" prefWidth="300.0" promptText="Seleccione una persona" />
                         </HBox>
-                        <TableView fx:id="tablaVentasPersona" prefHeight="240.0">
+
+                        <Label text="Ventas Activas" textFill="#222222">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                        </Label>
+                        <TableView fx:id="tablaVentasPersona" prefHeight="170.0">
                             <columns>
                                 <TableColumn fx:id="colCodigoVenta" prefWidth="150.0" text="Código Venta" />
                                 <TableColumn fx:id="colFechaVenta" prefWidth="220.0" text="Fecha y Hora" />
@@ -109,8 +113,19 @@
                             </columns>
                         </TableView>
                         <HBox spacing="10.0">
-                            <Button onAction="#eliminarVentaSeleccionada" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="Eliminar Venta Seleccionada" />
+                            <Button onAction="#cancelarVentaSeleccionada" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="Cancelar Venta Seleccionada" />
                         </HBox>
+
+                        <Label text="Apartado de Ventas Canceladas" textFill="#222222">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                        </Label>
+                        <TableView fx:id="tablaVentasCanceladas" prefHeight="170.0">
+                            <columns>
+                                <TableColumn fx:id="colCodigoVentaCancelada" prefWidth="150.0" text="Código Venta" />
+                                <TableColumn fx:id="colFechaVentaCancelada" prefWidth="220.0" text="Fecha y Hora" />
+                                <TableColumn fx:id="colValorVentaCancelada" prefWidth="180.0" text="Valor Pagado" />
+                            </columns>
+                        </TableView>
                     </VBox>
                 </Tab>
             </tabs>

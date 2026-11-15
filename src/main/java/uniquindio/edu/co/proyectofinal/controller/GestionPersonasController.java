@@ -3,6 +3,7 @@ package uniquindio.edu.co.proyectofinal.controller;
 import uniquindio.edu.co.proyectofinal.model.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GestionPersonasController {
     private Cine cine;
@@ -56,23 +57,52 @@ public class GestionPersonasController {
     }
 
     public List<Venta> obtenerVentasDePersona(Persona persona) {
+        List<Venta> ventas = new ArrayList<>();
         if (persona instanceof ClienteVendedor cv) {
-            return cv.getListaCompras();
+            ventas = cv.getListaCompras();
         } else if (persona instanceof Cliente c) {
-            return c.getListaCompras();
+            ventas = c.getListaCompras();
         } else if (persona instanceof Vendedor v) {
-            return v.getListaVentas();
+            ventas = v.getListaVentas();
         }
-        return new ArrayList<>();
+        // Retornamos solo las ventas ACTIVAS para el historial principal
+        return ventas.stream()
+                .filter(v -> v.getEstadoVenta() == EstadoVenta.ACTIVA)
+                .collect(Collectors.toList());
     }
 
-    public void eliminarVentaDePersona(Persona persona, Venta venta) {
+    public List<Venta> obtenerVentasCanceladasDePersona(Persona persona) {
+        List<Venta> ventas = new ArrayList<>();
         if (persona instanceof ClienteVendedor cv) {
-            cv.getListaCompras().remove(venta);
+            ventas = cv.getListaCompras();
         } else if (persona instanceof Cliente c) {
-            c.getListaCompras().remove(venta);
+            ventas = c.getListaCompras();
         } else if (persona instanceof Vendedor v) {
-            v.getListaVentas().remove(venta);
+            ventas = v.getListaVentas();
+        }
+        // Retornamos el apartado de ventas CANCELADAS
+        return ventas.stream()
+                .filter(v -> v.getEstadoVenta() == EstadoVenta.CANCELADA)
+                .collect(Collectors.toList());
+    }
+
+    public void cancelarVentaDePersona(Venta venta) {
+        if (venta != null) {
+            // 1. Cambiar el estado de la venta a CANCELADA
+            venta.setEstadoVenta(EstadoVenta.CANCELADA);
+
+            // 2. Liberar los asientos asociados a esta venta
+            if (venta.getListaDetalles() != null) {
+                for (DetalleVenta detalle : venta.getListaDetalles()) {
+                    if (detalle.getListaEntradas() != null) {
+                        for (Entrada entrada : detalle.getListaEntradas()) {
+                            if (entrada.getAsiento() != null) {
+                                entrada.getAsiento().setEstado(EstadoAsiento.DISPONIBLE);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

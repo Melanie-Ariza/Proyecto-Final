@@ -36,9 +36,16 @@ public class GestionPersonasViewController {
     @FXML private ComboBox<Cargo> comboCargoCV;
 
     @FXML private ComboBox<Persona> comboPersonas;
+
+    // Tabla de Ventas Activas
     @FXML private TableView<Venta> tablaVentasPersona;
     @FXML private TableColumn<Venta, String> colCodigoVenta, colFechaVenta;
     @FXML private TableColumn<Venta, Double> colValorVenta;
+
+    // Tabla de Ventas Canceladas (Apartado nuevo)
+    @FXML private TableView<Venta> tablaVentasCanceladas;
+    @FXML private TableColumn<Venta, String> colCodigoVentaCancelada, colFechaVentaCancelada;
+    @FXML private TableColumn<Venta, Double> colValorVentaCancelada;
 
     private GestionPersonasController gestionPersonasController;
 
@@ -68,15 +75,23 @@ public class GestionPersonasViewController {
             return new SimpleDoubleProperty((cv != null && cv.getCargo() != null) ? cv.getCargo().getSalario() : 0.0).asObject();
         });
 
+        // Configuración tabla ventas activas
         colCodigoVenta.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colFechaVenta.setCellValueFactory(cellData -> {
             LocalDateTime fecha = cellData.getValue().getFechaHoraVenta();
-            if (fecha != null) {
-                return new SimpleStringProperty(fecha.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            }
-            return new SimpleStringProperty("");
+            return new SimpleStringProperty(fecha != null ? fecha.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "");
         });
         colValorVenta.setCellValueFactory(new PropertyValueFactory<>("valorPagado"));
+
+        // Configuración tabla ventas canceladas
+        if (colCodigoVentaCancelada != null) {
+            colCodigoVentaCancelada.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+            colFechaVentaCancelada.setCellValueFactory(cellData -> {
+                LocalDateTime fecha = cellData.getValue().getFechaHoraVenta();
+                return new SimpleStringProperty(fecha != null ? fecha.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "");
+            });
+            colValorVentaCancelada.setCellValueFactory(new PropertyValueFactory<>("valorPagado"));
+        }
 
         if (comboCargoVendedor != null) {
             comboCargoVendedor.setItems(FXCollections.observableArrayList(Cargo.values()));
@@ -264,20 +279,28 @@ public class GestionPersonasViewController {
     void cargarVentasPersona(ActionEvent event) {
         Persona personaSeleccionada = comboPersonas.getSelectionModel().getSelectedItem();
         if (personaSeleccionada != null && gestionPersonasController != null) {
-            tablaVentasPersona.setItems(FXCollections.observableArrayList(gestionPersonasController.obtenerVentasDePersona(personaSeleccionada)));
+            // Carga ventas activas
+            tablaVentasPersona.setItems(FXCollections.observableArrayList(
+                    gestionPersonasController.obtenerVentasDePersona(personaSeleccionada)
+            ));
+            // Carga ventas canceladas en el apartado correspondiente
+            if (tablaVentasCanceladas != null) {
+                tablaVentasCanceladas.setItems(FXCollections.observableArrayList(
+                        gestionPersonasController.obtenerVentasCanceladasDePersona(personaSeleccionada)
+                ));
+            }
         }
     }
 
     @FXML
-    void eliminarVentaSeleccionada(ActionEvent event) {
+    void cancelarVentaSeleccionada(ActionEvent event) {
         Venta ventaSeleccionada = tablaVentasPersona.getSelectionModel().getSelectedItem();
-        Persona personaSeleccionada = comboPersonas.getSelectionModel().getSelectedItem();
-        if (ventaSeleccionada != null && personaSeleccionada != null) {
-            gestionPersonasController.eliminarVentaDePersona(personaSeleccionada, ventaSeleccionada);
-            cargarVentasPersona(null);
-            mostrarAlerta("Éxito", "Venta eliminada de la persona correctamente.", Alert.AlertType.INFORMATION);
+        if (ventaSeleccionada != null) {
+            gestionPersonasController.cancelarVentaDePersona(ventaSeleccionada);
+            cargarVentasPersona(null); // Refresca ambas tablas (activos y cancelados)
+            mostrarAlerta("Éxito", "La venta ha sido cambiada a estado CANCELADA y movida al apartado correspondiente.", Alert.AlertType.INFORMATION);
         } else {
-            mostrarAlerta("Advertencia", "Seleccione una persona y una venta para eliminar.", Alert.AlertType.WARNING);
+            mostrarAlerta("Advertencia", "Seleccione una venta activa para cancelar.", Alert.AlertType.WARNING);
         }
     }
 
