@@ -35,7 +35,7 @@ public class GestionPeliculasController {
 
     public boolean registrarPelicula(int codigo, String nombre, String genero, int duracion, Clasificacion clasificacion, String estado) {
         String estadoFinal = (estado == null || estado.isEmpty()) ? "ACTIVO" : estado;
-        Pelicula nueva = new Pelicula(codigo, nombre, genero, duracion, estadoFinal, clasificacion, "/uniquindio/edu/co/proyectofinal/images/default.jpg");
+        Pelicula nueva = new Pelicula(codigo, nombre, genero, duracion, estadoFinal, clasificacion, "/uniquindio/edu/co/proyectofinal/images/deflt.jpg");
         return cine.registrarPelicula(nueva);
     }
 

@@ -42,16 +42,40 @@ public class CarteleraViewController {
                 imageView.setFitHeight(200);
                 imageView.setPreserveRatio(false);
 
+                // --- LÓGICA INTELIGENTE DE CARGA DE IMÁGENES ---
+                InputStream imageStream = null;
+
+                // 1. Intentar cargar la ruta definida en la película (si existe)
                 if (p.getImagenRuta() != null && !p.getImagenRuta().isEmpty()) {
-                    try {
-                        InputStream imageStream = getClass().getResourceAsStream(p.getImagenRuta());
-                        if (imageStream != null) {
-                            imageView.setImage(new Image(imageStream));
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Error al cargar la imagen para: " + p.getNombre());
+                    imageStream = getClass().getResourceAsStream(p.getImagenRuta());
+                }
+
+                // 2. Si no hay imagen asignada, buscar automáticamente por el nombre de la película
+                if (imageStream == null && p.getNombre() != null) {
+                    // Normalizar nombre: minúsculas, sin espacios ni caracteres especiales
+                    String nombreLimpio = p.getNombre().toLowerCase()
+                            .replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
+                            .replaceAll("[^a-z0-9]", "");
+
+                    String rutaJpg = "/uniquindio/edu/co/proyectofinal/images/" + nombreLimpio + ".jpg";
+                    String rutaPng = "/uniquindio/edu/co/proyectofinal/images/" + nombreLimpio + ".png";
+
+                    imageStream = getClass().getResourceAsStream(rutaJpg);
+                    if (imageStream == null) {
+                        imageStream = getClass().getResourceAsStream(rutaPng);
                     }
                 }
+
+                // 3. Si aun así no se encuentra ninguna, usar la imagen por defecto
+                if (imageStream == null) {
+                    imageStream = getClass().getResourceAsStream("/uniquindio/edu/co/proyectofinal/images/default.jpg");
+                }
+
+                // Asignar la imagen al ImageView si se encontró un flujo válido
+                if (imageStream != null) {
+                    imageView.setImage(new Image(imageStream));
+                }
+                // -----------------------------------------------
 
                 Label lblClasificacion = new Label(p.getClasificacion().toString());
                 lblClasificacion.setFont(Font.font("System", FontWeight.BOLD, 10));
