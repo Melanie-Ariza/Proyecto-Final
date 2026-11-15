@@ -23,6 +23,7 @@ public class PrincipalViewController {
     @FXML private Button btnFunciones;
     @FXML private Button btnVentas;
     @FXML private Button btnSalas;
+    @FXML private Button btnGestionVentas;
     @FXML private Button btnPersonas;
     @FXML private Button btnGestionPeliculas;
     @FXML private Button btnReportes;
@@ -144,6 +145,22 @@ public class PrincipalViewController {
             mostrarAlerta("Error", "No se pudo cargar las salas: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
+    @FXML
+    void mostrarVentasPersona(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/ventas-persona-view.fxml"));
+            Parent root = loader.load();
+            VentasPersonaViewController controller = loader.getController();
+            controller.setCine(cine);
+
+            borderPanePrincipal.setCenter(root);
+
+            // Activar el estilo rojo en el botón de Ventas y quitarlo de los demás
+            activarBotonMenuPersonalizado(btnGestionVentas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     void mostrarGestionPersonas(ActionEvent event) {
@@ -227,7 +244,7 @@ public class PrincipalViewController {
     }
 
     private void activarBotonMenuPersonalizado(Button botonActivo) {
-        Button[] botones = {btnGestionPeliculas, btnCartelera, btnFunciones, btnVentas, btnSalas, btnPersonas, btnReportes};
+        Button[] botones = {btnGestionPeliculas, btnCartelera, btnFunciones, btnVentas, btnSalas, btnPersonas, btnReportes, btnGestionVentas};
         for (Button b : botones) {
             if (b != null) {
                 if (b == botonActivo) {

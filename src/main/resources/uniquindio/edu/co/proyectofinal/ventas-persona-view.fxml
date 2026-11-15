@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane style="-fx-background-color: #F4F4F4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uniquindio.edu.co.proyectofinal.viewController.VentasPersonaViewController">
+    <center>
+        <VBox spacing="15.0">
+            <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+            <Label text="Historial de Ventas / Compras por Persona" textFill="#222222">
+                <font><Font name="System Bold" size="18.0" /></font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
+                <Label text="Seleccionar Persona:" textFill="#333333">
+                    <font><Font name="System Bold" size="12.0" /></font>
+                </Label>
+                <ComboBox fx:id="comboPersonas" onAction="#cargarVentasPersona" prefWidth="300.0" promptText="Seleccione una persona" />
+            </HBox>
+
+            <Label text="Ventas Activas" textFill="#222222">
+                <font><Font name="System Bold" size="14.0" /></font>
+            </Label>
+            <TableView fx:id="tablaVentasPersona" prefHeight="170.0">
+                <columns>
+                    <TableColumn fx:id="colCodigoVenta" prefWidth="150.0" text="Código Venta" />
+                    <TableColumn fx:id="colFechaVenta" prefWidth="220.0" text="Fecha y Hora" />
+                    <TableColumn fx:id="colValorVenta" prefWidth="180.0" text="Valor Pagado" />
+                </columns>
+            </TableView>
+            <HBox spacing="10.0">
+                <Button onAction="#cancelarVentaSeleccionada" style="-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="Cancelar Venta Seleccionada" />
+            </HBox>
+
+            <Label text="Apartado de Ventas Canceladas" textFill="#222222">
+                <font><Font name="System Bold" size="14.0" /></font>
+            </Label>
+            <TableView fx:id="tablaVentasCanceladas" prefHeight="170.0">
+                <columns>
+                    <TableColumn fx:id="colCodigoVentaCancelada" prefWidth="150.0" text="Código Venta" />
+                    <TableColumn fx:id="colFechaVentaCancelada" prefWidth="220.0" text="Fecha y Hora" />
+                    <TableColumn fx:id="colValorVentaCancelada" prefWidth="180.0" text="Valor Pagado" />
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

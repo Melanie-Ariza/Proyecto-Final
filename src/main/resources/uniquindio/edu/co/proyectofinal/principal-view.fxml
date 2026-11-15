@@ -52,6 +52,7 @@
                         <Button fx:id="btnFunciones" mnemonicParsing="false" onAction="#mostrarFunciones" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="FUNCIONES" textFill="#333333" />
                         <Button fx:id="btnVentas" mnemonicParsing="false" onAction="#mostrarVentas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="VENTA DE BOLETAS" textFill="#333333" />
                         <Button fx:id="btnSalas" mnemonicParsing="false" onAction="#mostrarSalas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="SALAS Y ASIENTOS" textFill="#333333" />
+                        <Button fx:id="btnGestionVentas" mnemonicParsing="false" onAction="#mostrarVentasPersona" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="VENTAS" textFill="#333333" />
                         <Button fx:id="btnPersonas" mnemonicParsing="false" onAction="#mostrarGestionPersonas" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand;" text="GESTIÓN PERSONAS" textFill="#333333">
                             <padding>
                                 <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
