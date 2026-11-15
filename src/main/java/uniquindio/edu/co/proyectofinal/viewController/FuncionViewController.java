@@ -101,7 +101,7 @@ public class FuncionViewController {
         if (funcionController != null) {
             // Solo con las películas disponibles
             cmbPelicula.setItems(FXCollections.observableArrayList(funcionController.obtenerPeliculasDisponibles()));
-            cmbSala.setItems(FXCollections.observableArrayList(funcionController.obtenerSalas()));
+            cmbSala.setItems(FXCollections.observableArrayList(funcionController.obtenerSalasDisponibles()));
         }
     }
 

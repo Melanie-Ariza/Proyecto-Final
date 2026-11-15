@@ -21,8 +21,17 @@ public class FuncionController {
         return (cine != null) ? cine.consultarPeliculasDisponibles() : new ArrayList<>();
     }
 
-    public List<Sala> obtenerSalas() {
-        return (cine != null) ? cine.getListaSalas() : new ArrayList<>();
+    public List<Sala> obtenerSalasDisponibles() {
+        List<Sala> disponibles = new ArrayList<>();
+        if (cine != null && cine.getListaSalas() != null) {
+            for (Sala s : cine.getListaSalas()) {
+                // Solo retorna las salas que NO estén fuera de servicio
+                if (s.getEstado() == EstadoSala.DISPONIBLE) {
+                    disponibles.add(s);
+                }
+            }
+        }
+        return disponibles;
     }
 
     public List<Funcion> consultarFuncionesPorFecha(LocalDate fecha) {

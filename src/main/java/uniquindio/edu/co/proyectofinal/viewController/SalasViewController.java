@@ -10,6 +10,14 @@ import uniquindio.edu.co.proyectofinal.model.*;
 
 public class SalasViewController {
 
+    // Componentes unificados (se eliminaron los duplicados txt...Sala)
+    @FXML private TextField txtCodigo;
+    @FXML private TextField txtNumero;
+    @FXML private TextField txtCapacidad;
+
+    @FXML private ComboBox<EstadoSala> cmbEstadoSala;
+    @FXML private ComboBox<ColeccionAsientos> cmbColeccionAsientos;
+    @FXML private Label lblMensajeSala;
     @FXML private ListView<Sala> listSalas;
     @FXML private GridPane gridAsientos;
     @FXML private Label lblTituloSala;
@@ -19,15 +27,10 @@ public class SalasViewController {
     @FXML private Button btnCambiarModo;
     @FXML private VBox panelVistaAsientos;
     @FXML private VBox panelGestionSalas;
-    @FXML private TextField txtCodigo;
-    @FXML private TextField txtNumero;
-    @FXML private TextField txtCapacidad;
-    @FXML private ComboBox<EstadoSala> cmbEstadoSala;
-    @FXML private ComboBox<ColeccionAsientos> cmbColeccionAsientos;
-    @FXML private Label lblMensajeSala;
 
     private SalasController salasController;
     private boolean modoGestion = false;
+    private boolean esAdmin = true;
 
     public void setCine(Cine cine) {
         this.salasController = new SalasController(cine);
@@ -53,13 +56,11 @@ public class SalasViewController {
                     if (!modoGestion) {
                         mostrarMapaAsientos(salaSeleccionada);
                     } else {
-                        // Si estamos en modo gestión y el usuario hace clic en una sala, cargamos sus datos para modificar
                         cargarDatosSalaEnFormulario(salaSeleccionada);
                     }
                 }
             });
 
-            // Por defecto en modo vista seleccionamos la primera sala si existe
             if (!listSalas.getItems().isEmpty() && !modoGestion) {
                 listSalas.getSelectionModel().select(0);
             }
@@ -74,7 +75,6 @@ public class SalasViewController {
     private void cambiarModo() {
         modoGestion = !modoGestion;
         if (modoGestion) {
-            // Cambiar a MODO GESTIÓN
             btnCambiarModo.setText("Modo: Gestión");
             btnCambiarModo.setStyle("-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;");
             panelVistaAsientos.setVisible(false);
@@ -82,12 +82,9 @@ public class SalasViewController {
             panelGestionSalas.setVisible(true);
             panelGestionSalas.setManaged(true);
 
-            // Limpiamos la selección de la lista para que los campos queden vacíos listos para registrar
             listSalas.getSelectionModel().clearSelection();
             limpiarCamposParaNuevaSala();
-
         } else {
-            // Cambiar a MODO VISTA
             btnCambiarModo.setText("Modo: Vista");
             btnCambiarModo.setStyle("-fx-background-color: #C8102E; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;");
             panelGestionSalas.setVisible(false);
@@ -95,16 +92,12 @@ public class SalasViewController {
             panelVistaAsientos.setVisible(true);
             panelVistaAsientos.setManaged(true);
 
-            // Volver a seleccionar la primera sala en el modo vista
             if (!listSalas.getItems().isEmpty()) {
                 listSalas.getSelectionModel().select(0);
             }
         }
     }
 
-    /**
-     * Limpia los campos y asigna automáticamente el siguiente código consecutivo, dejándolo bloqueado.
-     */
     @FXML
     private void limpiarCamposSala() {
         limpiarCamposParaNuevaSala();
@@ -112,7 +105,6 @@ public class SalasViewController {
     }
 
     private void limpiarCamposParaNuevaSala() {
-        // Calcular el siguiente código correlativo basado en las salas existentes
         int siguienteCodigo = 1;
         if (salasController != null && salasController.obtenerSalas() != null) {
             for (Sala s : salasController.obtenerSalas()) {
@@ -123,8 +115,8 @@ public class SalasViewController {
         }
 
         txtCodigo.setText(String.valueOf(siguienteCodigo));
-        txtCodigo.setEditable(false); // El código se autogenera y no se deja modificar
-        txtCodigo.setStyle("-fx-background-color: #E9ECEF; -fx-text-fill: #495057;"); // Apariencia de campo bloqueado
+        txtCodigo.setEditable(false);
+        txtCodigo.setStyle("-fx-background-color: #E9ECEF; -fx-text-fill: #495057;");
 
         txtNumero.clear();
         txtCapacidad.clear();
@@ -135,7 +127,7 @@ public class SalasViewController {
 
     private void cargarDatosSalaEnFormulario(Sala sala) {
         txtCodigo.setText(String.valueOf(sala.getCodigo()));
-        txtCodigo.setEditable(false); // Al modificar, el código tampoco debe alterarse
+        txtCodigo.setEditable(false);
         txtCodigo.setStyle("-fx-background-color: #E9ECEF; -fx-text-fill: #495057;");
 
         txtNumero.setText(String.valueOf(sala.getNumero()));
@@ -147,13 +139,11 @@ public class SalasViewController {
 
     private void mostrarMapaAsientos(Sala sala) {
         gridAsientos.getChildren().clear();
-
-        // Verificamos si la sala está fuera de servicio
         boolean fueraDeServicio = (sala.getEstado() == EstadoSala.FUERA_DE_SERVICIO);
 
         if (fueraDeServicio) {
-            lblTituloSala.setText("⚠️ Sala #" + sala.getNumero() + " - [FUERA DE SERVICIO] (Capacidad: " + sala.getCapacidad() + ")");
-            lblTituloSala.setStyle("-fx-text-fill: #575C5C; -fx-font-weight: bold;");
+            lblTituloSala.setText("⚠️ Sala #" + sala.getNumero() + " [FUERA DE SERVICIO] - Capacidad: " + sala.getCapacidad());
+            lblTituloSala.setStyle("-fx-text-fill: #E74C3C; -fx-font-weight: bold;");
         } else {
             lblTituloSala.setText("Sala #" + sala.getNumero() + " (" + sala.getColeccionAsientos() + ") - Capacidad: " + sala.getCapacidad());
             lblTituloSala.setStyle("-fx-text-fill: #C8102E; -fx-font-weight: bold;");
@@ -163,62 +153,75 @@ public class SalasViewController {
         int fila = 0;
         int maxColumnas = 10;
 
-        for (Asiento asiento : sala.getListaAsientos()) {
-            Button btnAsiento = new Button(asiento.obtenerPuesto());
-            btnAsiento.setPrefWidth(55);
-            btnAsiento.setPrefHeight(40);
-            btnAsiento.setAlignment(Pos.CENTER);
+        if (sala.getListaAsientos() != null) {
+            for (Asiento asiento : sala.getListaAsientos()) {
+                Button btnAsiento = new Button(asiento.obtenerPuesto());
+                btnAsiento.setPrefWidth(68);
+                btnAsiento.setPrefHeight(48);
+                btnAsiento.setAlignment(Pos.CENTER);
+                btnAsiento.setFont(javafx.scene.text.Font.font("System Bold", 13));
 
-            if (fueraDeServicio) {
-                // Si la sala está fuera de servicio, las sillas se muestran con el color #575C5C y deshabilitadas
-                btnAsiento.setStyle("-fx-background-color: #575C5C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
-                btnAsiento.setDisable(true);
-            } else {
-                btnAsiento.setDisable(false);
-                if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
-                    btnAsiento.setStyle("-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                if (fueraDeServicio) {
+                    btnAsiento.setStyle("-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6;");
+                    btnAsiento.setTooltip(new Tooltip("Sala Fuera de Servicio"));
+                } else if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
+                    btnAsiento.setStyle("-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand;");
                 } else {
-                    btnAsiento.setStyle("-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                    btnAsiento.setStyle("-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6;");
                 }
-            }
 
-            gridAsientos.add(btnAsiento, columna, fila);
-            columna++;
-            if (columna >= maxColumnas) {
-                columna = 0;
-                fila++;
+                gridAsientos.add(btnAsiento, columna, fila);
+                columna++;
+                if (columna >= maxColumnas) {
+                    columna = 0;
+                    fila++;
+                }
             }
         }
     }
 
     @FXML
-    private void registrarSala() {
+    void registrarSala() {
         try {
-            int codigo = Integer.parseInt(txtCodigo.getText());
-            int numero = Integer.parseInt(txtNumero.getText());
-            int capacidad = Integer.parseInt(txtCapacidad.getText());
-            EstadoSala estado = cmbEstadoSala.getValue();
-            ColeccionAsientos coleccion = cmbColeccionAsientos.getValue();
+            // 1. Validar que los campos de texto no estén vacíos antes de parsear
+            if (txtCodigo.getText() == null || txtCodigo.getText().trim().isEmpty() ||
+                    txtNumero.getText() == null || txtNumero.getText().trim().isEmpty() ||
+                    txtCapacidad.getText() == null || txtCapacidad.getText().trim().isEmpty()) {
 
-            if (estado == null || coleccion == null || txtNumero.getText().isEmpty() || txtCapacidad.getText().isEmpty()) {
                 lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
-                lblMensajeSala.setText("Por favor complete todos los campos obligatorios.");
+                lblMensajeSala.setText("Error: Todos los campos numéricos son obligatorios.");
                 return;
             }
 
-            boolean exito = salasController.registrarSala(codigo, numero, capacidad, estado, coleccion);
-            if (exito) {
+            // 2. Validar que los ComboBox tengan una opción seleccionada
+            EstadoSala estado = cmbEstadoSala.getValue();
+            ColeccionAsientos coleccion = cmbColeccionAsientos.getValue();
+
+            if (estado == null || coleccion == null) {
+                lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
+                lblMensajeSala.setText("Error: Debe seleccionar un Estado y un Tipo de Asientos.");
+                return;
+            }
+
+            int codigo = Integer.parseInt(txtCodigo.getText().trim());
+            int numero = Integer.parseInt(txtNumero.getText().trim());
+            int capacidad = Integer.parseInt(txtCapacidad.getText().trim());
+
+            // 3. Llamar al controlador
+            String error = salasController.registrarSala(codigo, numero, capacidad, estado, coleccion);
+
+            if (error == null) {
                 lblMensajeSala.setStyle("-fx-text-fill: #2ECC71;");
                 lblMensajeSala.setText("Sala registrada con éxito.");
                 actualizarLista();
-                limpiarCamposSala(); // Limpia y autogenera el siguiente código
+                limpiarCamposSala();
             } else {
                 lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
-                lblMensajeSala.setText("Error: Ya existe una sala registrada con ese código o número.");
+                lblMensajeSala.setText(error);
             }
         } catch (NumberFormatException e) {
             lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
-            lblMensajeSala.setText("Ingrese valores numéricos válidos en Número y Capacidad.");
+            lblMensajeSala.setText("Error de formato: Ingrese solo números enteros válidos.");
         }
     }
 
@@ -232,55 +235,61 @@ public class SalasViewController {
         }
 
         try {
-            int numero = Integer.parseInt(txtNumero.getText());
-            int capacidad = Integer.parseInt(txtCapacidad.getText());
+            if (txtNumero.getText().isEmpty() || txtCapacidad.getText().isEmpty() ||
+                    cmbEstadoSala.getValue() == null || cmbColeccionAsientos.getValue() == null) {
+                lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
+                lblMensajeSala.setText("Por favor complete todos los campos obligatorios.");
+                return;
+            }
+
+            int numero = Integer.parseInt(txtNumero.getText().trim());
+            int capacidad = Integer.parseInt(txtCapacidad.getText().trim());
             EstadoSala estado = cmbEstadoSala.getValue();
             ColeccionAsientos coleccion = cmbColeccionAsientos.getValue();
 
-            boolean exito = salasController.modificarSala(seleccionada, numero, capacidad, estado, coleccion);
-            if (exito) {
+            String error = salasController.modificarSala(seleccionada, numero, capacidad, estado, coleccion);
+
+            if (error == null) {
                 lblMensajeSala.setStyle("-fx-text-fill: #2ECC71;");
                 lblMensajeSala.setText("Sala modificada correctamente.");
                 actualizarLista();
+                listSalas.getSelectionModel().select(seleccionada);
+                mostrarMapaAsientos(seleccionada);
             } else {
                 lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
-                lblMensajeSala.setText("No se pudo modificar: Ya existe otra sala con ese número.");
+                lblMensajeSala.setText(error);
             }
         } catch (NumberFormatException e) {
             lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
-            lblMensajeSala.setText("Ingrese valores numéricos válidos.");
+            lblMensajeSala.setText("Ingrese valores numéricos válidos en número y capacidad.");
         }
     }
 
     @FXML
-    private void deshabilitarSala() {
-        Sala seleccionada = listSalas.getSelectionModel().getSelectedItem();
-        if (seleccionada == null) {
+    void deshabilitarSala() {
+        Sala salaSeleccionada = listSalas.getSelectionModel().getSelectedItem();
+        if (salaSeleccionada == null) {
             lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
             lblMensajeSala.setText("Seleccione una sala para deshabilitar.");
             return;
         }
 
-        boolean exito = salasController.deshabilitarSala(seleccionada);
-        if (exito) {
+        String error = salasController.deshabilitarSala(salaSeleccionada);
+        if (error == null) {
             lblMensajeSala.setStyle("-fx-text-fill: #2ECC71;");
-            lblMensajeSala.setText("Sala deshabilitada correctamente.");
+            lblMensajeSala.setText("Sala puesta fuera de servicio y funciones canceladas.");
             actualizarLista();
-            limpiarCamposSala();
+            mostrarMapaAsientos(salaSeleccionada);
         } else {
             lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
-            lblMensajeSala.setText("No se pudo deshabilitar la sala.");
+            lblMensajeSala.setText(error);
         }
     }
 
-    private boolean esAdmin = true;
-
     public void setModoAdministrador(boolean esAdmin) {
         this.esAdmin = esAdmin;
-        // Si es operador, ocultamos el botón de cambiar a modo gestión y deshabilitamos el panel CRUD
         if (!esAdmin) {
             if (btnCambiarModo != null) btnCambiarModo.setVisible(false);
-            // Forzamos que siempre esté en modo vista de asientos
             if (panelGestionSalas != null) {
                 panelGestionSalas.setVisible(false);
                 panelGestionSalas.setManaged(false);

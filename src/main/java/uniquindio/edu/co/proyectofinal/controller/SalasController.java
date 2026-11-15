@@ -15,40 +15,96 @@ public class SalasController {
         return (cine != null) ? cine.getListaSalas() : new ArrayList<>();
     }
 
-    public boolean registrarSala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
-        if (cine == null) return false;
+    public String registrarSala(int codigo, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccion) {
+        if (cine == null) return "Error de conexión con el cine.";
 
-        // Validar si ya existe una sala con el mismo código o el mismo número
-        boolean existe = cine.getListaSalas().stream()
-                .anyMatch(s -> s.getCodigo() == codigo || s.getNumero() == numero);
-        if (existe) return false;
+        // Verificar si ya existe el número o código de sala
+        for (Sala s : cine.getListaSalas()) {
+            if (s.getNumero() == numero || s.getCodigo() == codigo) {
+                return "Ya existe una sala registrada con ese código o número.";
+            }
+        }
 
-        Sala nuevaSala = new Sala(codigo, numero, capacidad, estado, coleccionAsientos);
-        return cine.registrarSala(nuevaSala);
+        Sala nuevaSala = new Sala(codigo, numero, capacidad, estado, coleccion);
+        generarAsientosParaSala(nuevaSala);
+
+        if (cine.registrarSala(nuevaSala)) {
+            return null; // Éxito
+        }
+        return "No se pudo registrar la sala.";
     }
 
-    public boolean modificarSala(Sala salaOriginal, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
-        if (salaOriginal == null || cine == null) return false;
+    public String modificarSala(Sala salaOriginal, int numero, int capacidad, EstadoSala estado, ColeccionAsientos coleccionAsientos) {
+        if (salaOriginal == null || cine == null) return "Seleccione una sala válida.";
 
         // Validar si el nuevo número ya pertenece a otra sala diferente
         boolean numeroOcupado = cine.getListaSalas().stream()
                 .anyMatch(s -> s.getNumero() == numero && s.getCodigo() != salaOriginal.getCodigo());
-        if (numeroOcupado) return false;
+        if (numeroOcupado) return "Ya existe otra sala registrada con el número " + numero;
 
         salaOriginal.setNumero(numero);
         salaOriginal.setCapacidad(capacidad);
         salaOriginal.setEstado(estado);
         salaOriginal.setColeccionAsientos(coleccionAsientos);
 
-        salaOriginal.generarAsientos();
+        // Regenerar los asientos con la nueva capacidad o colección
+        generarAsientosParaSala(salaOriginal);
 
-        return true;
+        // Si la sala pasa a estar fuera de servicio, cancelar sus funciones programadas
+        if (estado == EstadoSala.FUERA_DE_SERVICIO && cine.getListaFunciones() != null) {
+            for (Funcion f : cine.getListaFunciones()) {
+                if (f.getSala() != null && f.getSala().getNumero() == salaOriginal.getNumero()) {
+                    if (f.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
+                        f.setEstadoFuncion(EstadoFuncion.CANCELADA);
+                    }
+                }
+            }
+        }
+
+        return null; // Éxito
     }
 
-    public boolean deshabilitarSala(Sala sala) {
-        if (sala == null) return false;
-        // Dependiendo de tu enumerador, puedes cambiar el estado a INACTIVA o similar
-        sala.setEstado(EstadoSala.FUERA_DE_SERVICIO); // O el valor correspondiente en tu app
-        return true;
+    private void generarAsientosParaSala(Sala sala) {
+        List<Asiento> asientos = new ArrayList<>();
+        int capacidad = sala.getCapacidad();
+        int maxColumnas = 10;
+        char filaChar = 'A';
+        int numeroEnFila = 1;
+
+        // Generador de código automático e independiente (ej: 1, 2, 3... hasta la capacidad total)
+        int codigoIncremental = 1;
+
+        for (int i = 1; i <= capacidad; i++) {
+            // El código del asiento es un número único independiente de su posición
+            int codigo = codigoIncremental++;
+
+            // Se crea el asiento manteniendo su fila (ej. 'A') y su número en la fila (ej. 2)
+            Asiento asiento = new Asiento(codigo, String.valueOf(filaChar), numeroEnFila, EstadoAsiento.DISPONIBLE);
+            asientos.add(asiento);
+
+            numeroEnFila++;
+            if (numeroEnFila > maxColumnas) {
+                numeroEnFila = 1;
+                filaChar++;
+            }
+        }
+        sala.setListaAsientos(asientos);
+    }
+
+    public String deshabilitarSala(Sala salaSeleccionada) {
+        if (salaSeleccionada == null) return "Seleccione una sala para deshabilitar.";
+
+        salaSeleccionada.setEstado(EstadoSala.FUERA_DE_SERVICIO);
+
+        if (cine != null && cine.getListaFunciones() != null) {
+            for (Funcion f : cine.getListaFunciones()) {
+                if (f.getSala() != null && f.getSala().getNumero() == salaSeleccionada.getNumero()) {
+                    if (f.getEstadoFuncion() == EstadoFuncion.PROGRAMADA) {
+                        f.setEstadoFuncion(EstadoFuncion.CANCELADA);
+                    }
+                }
+            }
+        }
+        return null; // Éxito
     }
 }
