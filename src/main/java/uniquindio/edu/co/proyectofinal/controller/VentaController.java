@@ -76,9 +76,20 @@ public class VentaController {
         return disponibles;
     }
 
-    public double calcularPrecioEstimado(Funcion funcion, TipoEntrada tipo) {
+    public double calcularPrecioEstimado(Funcion funcion, TipoEntrada tipo, int documentoCliente) {
         if (funcion != null && tipo != null) {
-            return tipo.getValorEntrada() + funcion.getSala().getColeccionAsientos().getValorAsiento();
+            double total = tipo.getValorEntrada() + funcion.getSala().getColeccionAsientos().getValorAsiento();
+
+            // Verificar si el cliente existe y es un ClienteVendedor para aplicar su descuento
+            if (cine != null) {
+                Persona persona = cine.consultarPersona(documentoCliente);
+                if (persona instanceof ClienteVendedor cv) {
+                    double descuento = cv.calcularDescuento(total); // Asegúrate de que el método se llame así en tu modelo
+                    total -= descuento;
+                    if (total < 0) total = 0.0;
+                }
+            }
+            return total;
         }
         return 0.0;
     }
@@ -109,6 +120,13 @@ public class VentaController {
         DetalleVenta detalle = new DetalleVenta(1);
         detalle.agregarEntrada(entrada);
         double valorTotal = detalle.calcularSubtotal();
+
+        // APLICAR DESCUENTO SI EL CLIENTE FINAL ES CLIENTE-VENDEDOR
+        if (clienteFinal instanceof ClienteVendedor cv) {
+            double descuento = cv.calcularDescuento(valorTotal);
+            valorTotal -= descuento;
+            if (valorTotal < 0) valorTotal = 0.0;
+        }
 
         Vendedor vendedorObj = (vendedorSeleccionado instanceof Vendedor && !(vendedorSeleccionado instanceof ClienteVendedor))
                 ? (Vendedor) vendedorSeleccionado : null;

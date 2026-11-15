@@ -329,7 +329,7 @@ public class Cine {
         }
 
         if (cliente instanceof ClienteVendedor) {
-            total = total * ((ClienteVendedor) cliente).calcularDescuento();
+            total = total * ((ClienteVendedor) cliente).calcularDescuento(total);
         }
         return total;
     }

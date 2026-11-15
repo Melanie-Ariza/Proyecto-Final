@@ -32,6 +32,11 @@ public class VentaViewController {
         cmbTipoEntrada.getItems().setAll(TipoEntrada.values());
         cmbTipoEntrada.setValue(TipoEntrada.GENERAL);
 
+        // Listener para recalcular automáticamente el precio/descuento al escribir el documento del cliente
+        txtDocumentoCliente.textProperty().addListener((obs, oldVal, newVal) -> {
+            actualizarPrecioEstimado(null);
+        });
+
         cmbVendedor.setConverter(new StringConverter<Persona>() {
             @Override
             public String toString(Persona p) {
@@ -73,16 +78,26 @@ public class VentaViewController {
     }
 
     @FXML
+    void actualizarPrecioEstimado(ActionEvent event) {
+        int documento = 0;
+        try {
+            String docTexto = txtDocumentoCliente.getText().trim();
+            if (!docTexto.isEmpty()) {
+                documento = Integer.parseInt(docTexto);
+            }
+        } catch (NumberFormatException e) {
+            documento = 0; // Si no es un número válido aún, se calcula sin descuento de cliente
+        }
+
+        double total = ventaController.calcularPrecioEstimado(cmbFuncion.getValue(), cmbTipoEntrada.getValue(), documento);
+        lblTotalPagar.setText(total > 0 ? "$ " + String.format("%,.0f", total) : "$ 0");
+    }
+
+    @FXML
     void alSeleccionarFuncion(ActionEvent event) {
         Funcion funcion = cmbFuncion.getValue();
         cmbAsiento.getItems().setAll(ventaController.obtenerAsientosDisponibles(funcion));
         actualizarPrecioEstimado(null);
-    }
-
-    @FXML
-    void actualizarPrecioEstimado(ActionEvent event) {
-        double total = ventaController.calcularPrecioEstimado(cmbFuncion.getValue(), cmbTipoEntrada.getValue());
-        lblTotalPagar.setText(total > 0 ? "$ " + String.format("%,.0f", total) : "$ 0");
     }
 
     @FXML
