@@ -63,6 +63,14 @@
                                 <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
                             </padding>
                         </Button>
+                        <!-- Botón para alternar entre Operador y Administrador -->
+                        <Button fx:id="btnCambiarRol" mnemonicParsing="false" onAction="#cambiarRol"
+                                style="-fx-background-color: #34495E; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;"
+                                text="ROL: ADMIN" textFill="WHITE">
+                            <padding>
+                                <Insets bottom="6.0" left="14.0" right="14.0" top="6.0" />
+                            </padding>
+                        </Button>
                         <Button fx:id="btnSalir" mnemonicParsing="false" onAction="#salirAplicacion" style="-fx-background-color: #1C1C1C; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;" text="SALIR" textFill="WHITE">
                             <padding>
                                 <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />

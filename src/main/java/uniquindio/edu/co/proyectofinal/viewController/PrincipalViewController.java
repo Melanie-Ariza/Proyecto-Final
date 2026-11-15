@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import uniquindio.edu.co.proyectofinal.controller.PrincipalController;
 import uniquindio.edu.co.proyectofinal.model.*;
 import java.io.IOException;
 
@@ -27,11 +26,14 @@ public class PrincipalViewController {
     @FXML private Button btnPersonas;
     @FXML private Button btnGestionPeliculas;
     @FXML private Button btnReportes;
+    @FXML private Button btnCambiarRol;
     @FXML private Button btnSalir;
 
     private Node vistaReportesInicial;
-    private PrincipalController principalController;
+    private Cine cine;
+    private boolean esAdministrador = true; // true = ADMIN, false = OPERADOR
 
+    // Caché de vistas para optimizar navegación
     private Parent nodoCartelera;
     private CarteleraViewController carteleraViewController;
 
@@ -49,23 +51,25 @@ public class PrincipalViewController {
 
     @FXML
     public void initialize() {
-        this.principalController = new PrincipalController();
+        this.cine = new Cine(1, "CINEMAUQ");
         this.vistaReportesInicial = borderPanePrincipal.getCenter();
-
         actualizarDatosEnPantalla();
+        actualizarPermisosInterfaz();
     }
 
     @FXML
     void actualizarReportes(ActionEvent event) {
-        actualizarDatosEnPantalla();
+        if (esAdministrador) {
+            actualizarDatosEnPantalla();
+        }
     }
 
     private void actualizarDatosEnPantalla() {
-        if (principalController != null) {
-            lblTotalEntradas.setText(String.valueOf(principalController.obtenerTotalEntradasVendidas()));
-            lblTotalIngresos.setText("$ " + String.format("%,.0f", principalController.obtenerTotalIngresosGenerados()));
+        if (cine != null && lblTotalEntradas != null) {
+            lblTotalEntradas.setText(String.valueOf(cine.consultarTotalEntradasVendidas()));
+            lblTotalIngresos.setText("$ " + String.format("%,.0f", cine.consultarTotalIngresosGenerados()));
 
-            Pelicula topPelicula = principalController.obtenerPeliculaMasVendida();
+            Pelicula topPelicula = cine.identificarPeliculaMasVendida();
             if (topPelicula != null) {
                 lblPeliculaMasVendida.setText(topPelicula.getNombre());
                 lblDetallePeliculaTop.setText("Género: " + topPelicula.getGenero() + " • " + topPelicula.getDuracion() + " min");
@@ -84,7 +88,7 @@ public class PrincipalViewController {
                 nodoCartelera = loader.load();
                 carteleraViewController = loader.getController();
             }
-            carteleraViewController.setCine(principalController.getCine());
+            carteleraViewController.setCine(this.cine);
             borderPanePrincipal.setCenter(nodoCartelera);
             activarBotonMenuPersonalizado(btnCartelera);
         } catch (IOException e) {
@@ -100,7 +104,7 @@ public class PrincipalViewController {
                 nodoFunciones = loader.load();
                 funcionViewController = loader.getController();
             }
-            funcionViewController.setCine(principalController.getCine());
+            funcionViewController.setCine(cine);
             borderPanePrincipal.setCenter(nodoFunciones);
             activarBotonMenuPersonalizado(btnFunciones);
         } catch (IOException e) {
@@ -116,7 +120,7 @@ public class PrincipalViewController {
                 nodoVentas = loader.load();
                 ventaViewController = loader.getController();
             }
-            ventaViewController.setCine(principalController.getCine());
+            ventaViewController.setCine(cine);
             borderPanePrincipal.setCenter(nodoVentas);
             activarBotonMenuPersonalizado(btnVentas);
         } catch (IOException e) {
@@ -132,7 +136,8 @@ public class PrincipalViewController {
                 nodoSalas = loader.load();
                 salasViewController = loader.getController();
             }
-            salasViewController.setCine(principalController.getCine());
+            salasViewController.setCine(cine);
+            salasViewController.setModoAdministrador(esAdministrador); // Restringe o habilita el CRUD de salas según el rol
             borderPanePrincipal.setCenter(nodoSalas);
             activarBotonMenuPersonalizado(btnSalas);
         } catch (IOException e) {
@@ -142,13 +147,17 @@ public class PrincipalViewController {
 
     @FXML
     void mostrarGestionPersonas(ActionEvent event) {
+        if (!esAdministrador) {
+            mostrarAlerta("Acceso Denegado", "Los operadores no tienen permiso para gestionar personas.", Alert.AlertType.WARNING);
+            return;
+        }
         try {
             if (nodoPersonas == null) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/gestion-personas-view.fxml"));
                 nodoPersonas = loader.load();
                 gestionPersonasViewController = loader.getController();
             }
-            gestionPersonasViewController.setCine(principalController.getCine());
+            gestionPersonasViewController.setCine(cine);
             gestionPersonasViewController.actualizarTablas();
             borderPanePrincipal.setCenter(nodoPersonas);
             activarBotonMenuPersonalizado(btnPersonas);
@@ -158,20 +167,57 @@ public class PrincipalViewController {
     }
 
     @FXML
-    void mostrarGestionPeliculas(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/gestion-peliculas-view.fxml"));
-        Parent vista = loader.load();
-        GestionPeliculasViewController controller = loader.getController();
-        controller.setCine(principalController.getCine());
-        borderPanePrincipal.setCenter(vista);
-        activarBotonMenuPersonalizado(btnGestionPeliculas);
+    void mostrarGestionPeliculas(ActionEvent event) {
+        if (!esAdministrador) {
+            mostrarAlerta("Acceso Denegado", "Los operadores no tienen permiso para gestionar películas.", Alert.AlertType.WARNING);
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/uniquindio/edu/co/proyectofinal/gestion-peliculas-view.fxml"));
+            Parent vista = loader.load();
+            GestionPeliculasViewController controller = loader.getController();
+            controller.setCine(cine);
+            borderPanePrincipal.setCenter(vista);
+            activarBotonMenuPersonalizado(btnGestionPeliculas);
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo cargar la gestión de películas: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
 
     @FXML
     void mostrarReportes(ActionEvent event) {
+        if (!esAdministrador) {
+            mostrarAlerta("Acceso Denegado", "Los operadores no tienen acceso a los reportes administrativos.", Alert.AlertType.WARNING);
+            return;
+        }
         borderPanePrincipal.setCenter(vistaReportesInicial);
         actualizarDatosEnPantalla();
         activarBotonMenuPersonalizado(btnReportes);
+    }
+
+    @FXML
+    void cambiarRol(ActionEvent event) {
+        esAdministrador = !esAdministrador;
+
+        if (esAdministrador) {
+            btnCambiarRol.setText("ROL: ADMIN");
+            btnCambiarRol.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand; -fx-text-fill: white;");
+        } else {
+            btnCambiarRol.setText("ROL: OPERADOR");
+            btnCambiarRol.setStyle("-fx-background-color: #E67E22; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand; -fx-text-fill: white;");
+
+            // Si el operador cambia y estaba en una vista prohibida, lo redirigimos automáticamente a Ventas
+            mostrarVentas(null);
+        }
+
+        actualizarPermisosInterfaz();
+    }
+
+    private void actualizarPermisosInterfaz() {
+        // Ocultar o mostrar botones según el rol actual
+        if (btnGestionPeliculas != null) btnGestionPeliculas.setVisible(esAdministrador);
+        if (btnPersonas != null) btnPersonas.setVisible(esAdministrador);
+        if (btnReportes != null) btnReportes.setVisible(esAdministrador);
     }
 
     @FXML
@@ -199,5 +245,9 @@ public class PrincipalViewController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    public Cine getCine() {
+        return cine;
     }
 }

@@ -138,7 +138,7 @@
 
                         <HBox alignment="CENTER" spacing="12.0">
                             <children>
-                                <Button fx:id="btnRegistrarSala" mnemonicParsing="false" onAction="#registrarSala" style="-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Registrar" />
+                                <Button fx:id="btnRegistrarSalas" mnemonicParsing="false" onAction="#registrarSala" style="-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Registrar" />
                                 <Button fx:id="btnModificarSala" mnemonicParsing="false" onAction="#modificarSala" style="-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Modificar" />
                                 <Button fx:id="btnDeshabilitarSala" mnemonicParsing="false" onAction="#deshabilitarSala" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Deshabilitar" />
                                 <Button fx:id="btnLimpiarSala" mnemonicParsing="false" onAction="#limpiarCamposSala" style="-fx-background-color: #7F8C8D; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Limpiar" />

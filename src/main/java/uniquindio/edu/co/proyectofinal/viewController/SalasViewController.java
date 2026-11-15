@@ -15,6 +15,7 @@ public class SalasViewController {
     @FXML private Label lblTituloSala;
 
     // Componentes del modo gestión
+    @FXML private Button btnModificarSalas;
     @FXML private Button btnCambiarModo;
     @FXML private VBox panelVistaAsientos;
     @FXML private VBox panelGestionSalas;
@@ -252,6 +253,27 @@ public class SalasViewController {
         } else {
             lblMensajeSala.setStyle("-fx-text-fill: #C8102E;");
             lblMensajeSala.setText("No se pudo deshabilitar la sala.");
+        }
+    }
+
+    private boolean esAdmin = true;
+
+    public void setModoAdministrador(boolean esAdmin) {
+        this.esAdmin = esAdmin;
+        // Si es operador, ocultamos el botón de cambiar a modo gestión y deshabilitamos el panel CRUD
+        if (!esAdmin) {
+            if (btnCambiarModo != null) btnCambiarModo.setVisible(false);
+            // Forzamos que siempre esté en modo vista de asientos
+            if (panelGestionSalas != null) {
+                panelGestionSalas.setVisible(false);
+                panelGestionSalas.setManaged(false);
+            }
+            if (panelVistaAsientos != null) {
+                panelVistaAsientos.setVisible(true);
+                panelVistaAsientos.setManaged(true);
+            }
+        } else {
+            if (btnCambiarModo != null) btnCambiarModo.setVisible(true);
         }
     }
 }
