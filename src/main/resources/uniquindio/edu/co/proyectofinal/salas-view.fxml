@@ -37,14 +37,23 @@
                         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                     </padding>
                     <children>
-                        <Label fx:id="lblTituloSala" text="Selecciona una sala para ver su distribución" textFill="#C8102E">
+
+                        <!-- Título de la sala -->
+                        <Label fx:id="lblTituloSala"
+                               text="Selecciona una sala para ver su distribución"
+                               textFill="#C8102E">
                             <font>
                                 <Font name="System Bold" size="15.0" />
                             </font>
                         </Label>
 
-                        <!-- Pantalla de cine simulada -->
-                        <Pane prefHeight="25.5" prefWidth="450.0" style="-fx-background-color: #1C1C1C; -fx-background-radius: 3;" />
+                        <!-- Pantalla de cine fija -->
+                        <Pane prefHeight="25.5"
+                              minHeight="25.5"
+                              maxHeight="25.5"
+                              prefWidth="450.0"
+                              style="-fx-background-color: #1C1C1C; -fx-background-radius: 3;" />
+
                         <Label text="PANTALLA" textFill="#888888">
                             <font>
                                 <Font name="System Bold" size="10.0" />
@@ -53,8 +62,10 @@
 
                         <Separator prefWidth="200.0" />
 
+                        <!-- Aquí comienza el ScrollPane de los asientos -->
+
                         <!-- Cuadrícula Gráfica de Asientos -->
-                        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                        <ScrollPane fitToHeight="false" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                             <content>
                                 <GridPane fx:id="gridAsientos" alignment="CENTER" hgap="10.0" vgap="10.0">
                                     <padding>

@@ -31,7 +31,6 @@ public class CineTest {
                 "Ciencia Ficción",
                 160,
                 "ACTIVO",
-                new ArrayList<>(),
                 null,
                 "/img/avatar.jpg"
         );
@@ -47,8 +46,8 @@ public class CineTest {
 
     @Test
     public void testRegistrarPeliculaDuplicadaExcepcion() {
-        Pelicula pelicula1 = new Pelicula(1, "Avatar", "Ciencia Ficción", 160, "ACTIVO", new ArrayList<>(), null, "/img/avatar.jpg");
-        Pelicula pelicula2 = new Pelicula(1, "Avatar 2", "Ciencia Ficción", 180, "ACTIVO", new ArrayList<>(), null, "/img/avatar2.jpg");
+        Pelicula pelicula1 = new Pelicula(1, "Avatar", "Ciencia Ficción", 160, "ACTIVO", null, "/img/avatar.jpg");
+        Pelicula pelicula2 = new Pelicula(1, "Avatar 2", "Ciencia Ficción", 180, "ACTIVO",  null, "/img/avatar2.jpg");
 
         cine.registrarPelicula(pelicula1);
 
@@ -84,7 +83,7 @@ public class CineTest {
 
     @Test
     public void testProgramarFuncionExitoso() {
-        Pelicula pelicula = new Pelicula(1, "Matrix", "Acción", 136, "ACTIVO", new ArrayList<>(), null, "/img/matrix.jpg");
+        Pelicula pelicula = new Pelicula(1, "Matrix", "Acción", 136, "ACTIVO",null, "/img/matrix.jpg");
         cine.registrarPelicula(pelicula);
 
         Sala sala = new Sala(1, 1, 20, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
@@ -134,8 +133,8 @@ public class CineTest {
 
     @Test
     public void testConsultarPeliculasDisponiblesFiltroActivo() {
-        Pelicula peliculaActiva = new Pelicula(1, "Batman", "Acción", 140, "ACTIVO", new ArrayList<>(), null, "/img/batman.jpg");
-        Pelicula peliculaInactiva = new Pelicula(2, "Antigua", "Drama", 120, "NO_DISPONIBLE", new ArrayList<>(), null, "/img/old.jpg");
+        Pelicula peliculaActiva = new Pelicula(1, "Batman", "Acción", 140, "ACTIVO", null, "/img/batman.jpg");
+        Pelicula peliculaInactiva = new Pelicula(2, "Antigua", "Drama", 120, "NO_DISPONIBLE", null, "/img/old.jpg");
 
         cine.registrarPelicula(peliculaActiva);
         cine.registrarPelicula(peliculaInactiva);
@@ -168,7 +167,7 @@ public class CineTest {
 
     @Test
     public void testConsultarDisponibilidadAsientos() {
-        Pelicula pelicula = new Pelicula(1, "Matrix", "Acción", 136, "ACTIVO", new ArrayList<>(), null, "/img/matrix.jpg");
+        Pelicula pelicula = new Pelicula(1, "Matrix", "Acción", 136, "ACTIVO", null, "/img/matrix.jpg");
         cine.registrarPelicula(pelicula);
 
         Sala sala = new Sala(1, 1, 10, EstadoSala.DISPONIBLE, ColeccionAsientos.MOVIMIENTO);
@@ -192,7 +191,7 @@ public class CineTest {
     @Test
     public void testCancelarVentaExitosoYLiberaAsientos() {
         // Preparamos película, sala con 1 asiento, y función
-        Pelicula pelicula = new Pelicula(1, "Avatar", "Ciencia Ficción", 160, "ACTIVO", new ArrayList<>(), null, "/img/avatar.jpg");
+        Pelicula pelicula = new Pelicula(1, "Avatar", "Ciencia Ficción", 160, "ACTIVO", null, "/img/avatar.jpg");
         cine.registrarPelicula(pelicula);
 
         Sala sala = new Sala(1, 1, 1, EstadoSala.DISPONIBLE, ColeccionAsientos.ESTANDAR);
@@ -228,7 +227,7 @@ public class CineTest {
 
     @Test
     public void testRegistrarVentaFuncionSinCupoExcepcion() {
-        Pelicula pelicula = new Pelicula(1, "Avatar", "Ciencia Ficción", 160, "ACTIVO", new ArrayList<>(), null, "/img/avatar.jpg");
+        Pelicula pelicula = new Pelicula(1, "Avatar", "Ciencia Ficción", 160, "ACTIVO", null, "/img/avatar.jpg");
         cine.registrarPelicula(pelicula);
 
         // Sala con capacidad de 0 o simulando cupos agotados
