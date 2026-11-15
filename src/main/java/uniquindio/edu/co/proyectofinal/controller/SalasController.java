@@ -40,6 +40,8 @@ public class SalasController {
         salaOriginal.setEstado(estado);
         salaOriginal.setColeccionAsientos(coleccionAsientos);
 
+        salaOriginal.generarAsientos();
+
         return true;
     }
 

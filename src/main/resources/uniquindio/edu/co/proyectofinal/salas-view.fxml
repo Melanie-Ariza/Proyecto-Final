@@ -79,6 +79,12 @@
                                         <Label text="Ocupado" textFill="#444444" />
                                     </children>
                                 </HBox>
+                                <HBox alignment="CENTER" spacing="5.0">
+                                    <children>
+                                        <Pane prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: #9ea3a3; -fx-background-radius: 3;" />
+                                        <Label text="Fuera de Servicio" textFill="#444444" />
+                                    </children>
+                                </HBox>
                             </children>
                         </HBox>
                     </children>

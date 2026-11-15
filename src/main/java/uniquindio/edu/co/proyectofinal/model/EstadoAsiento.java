@@ -2,5 +2,6 @@ package uniquindio.edu.co.proyectofinal.model;
 
 public enum EstadoAsiento {
     DISPONIBLE,
-    OCUPADO
+    OCUPADO,
+    FUERA_DE_SERVICIO
 }

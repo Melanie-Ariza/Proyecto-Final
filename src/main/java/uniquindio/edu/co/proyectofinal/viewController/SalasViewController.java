@@ -147,7 +147,17 @@ public class SalasViewController {
 
     private void mostrarMapaAsientos(Sala sala) {
         gridAsientos.getChildren().clear();
-        lblTituloSala.setText("Sala #" + sala.getNumero() + " (" + sala.getColeccionAsientos() + ") - Capacidad: " + sala.getCapacidad());
+
+        // Verificamos si la sala está fuera de servicio
+        boolean fueraDeServicio = (sala.getEstado() == EstadoSala.FUERA_DE_SERVICIO);
+
+        if (fueraDeServicio) {
+            lblTituloSala.setText("⚠️ Sala #" + sala.getNumero() + " - [FUERA DE SERVICIO] (Capacidad: " + sala.getCapacidad() + ")");
+            lblTituloSala.setStyle("-fx-text-fill: #575C5C; -fx-font-weight: bold;");
+        } else {
+            lblTituloSala.setText("Sala #" + sala.getNumero() + " (" + sala.getColeccionAsientos() + ") - Capacidad: " + sala.getCapacidad());
+            lblTituloSala.setStyle("-fx-text-fill: #C8102E; -fx-font-weight: bold;");
+        }
 
         int columna = 0;
         int fila = 0;
@@ -159,10 +169,17 @@ public class SalasViewController {
             btnAsiento.setPrefHeight(40);
             btnAsiento.setAlignment(Pos.CENTER);
 
-            if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
-                btnAsiento.setStyle("-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+            if (fueraDeServicio) {
+                // Si la sala está fuera de servicio, las sillas se muestran con el color #575C5C y deshabilitadas
+                btnAsiento.setStyle("-fx-background-color: #575C5C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                btnAsiento.setDisable(true);
             } else {
-                btnAsiento.setStyle("-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                btnAsiento.setDisable(false);
+                if (asiento.getEstado() == EstadoAsiento.DISPONIBLE) {
+                    btnAsiento.setStyle("-fx-background-color: #2ECC71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                } else {
+                    btnAsiento.setStyle("-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+                }
             }
 
             gridAsientos.add(btnAsiento, columna, fila);
