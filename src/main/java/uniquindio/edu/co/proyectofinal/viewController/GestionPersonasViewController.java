@@ -111,9 +111,29 @@ public class GestionPersonasViewController {
 
     public void actualizarTablas() {
         if (gestionPersonasController != null) {
-            tablaClientes.setItems(FXCollections.observableArrayList(gestionPersonasController.obtenerClientes()));
-            tablaVendedores.setItems(FXCollections.observableArrayList(gestionPersonasController.obtenerVendedores()));
-            tablaClienteVendedor.setItems(FXCollections.observableArrayList(gestionPersonasController.obtenerClienteVendedores()));
+
+            tablaClientes.setItems(
+                    FXCollections.observableArrayList(
+                            gestionPersonasController.obtenerClientes()
+                    )
+            );
+
+            tablaVendedores.setItems(
+                    FXCollections.observableArrayList(
+                            gestionPersonasController.obtenerVendedores()
+                    )
+            );
+
+            tablaClienteVendedor.setItems(
+                    FXCollections.observableArrayList(
+                            gestionPersonasController.obtenerClienteVendedores()
+                    )
+            );
+
+            // Refrescar visualmente las tres tablas
+            tablaClientes.refresh();
+            tablaVendedores.refresh();
+            tablaClienteVendedor.refresh();
         }
     }
 
@@ -247,5 +267,25 @@ public class GestionPersonasViewController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+    @FXML
+    void refrescarDatos(ActionEvent event) {
+
+        if (gestionPersonasController != null) {
+
+            // Actualizar las tres tablas
+            actualizarTablas();
+
+            // Limpiar los formularios
+            limpiarCamposCliente(null);
+            limpiarCamposVendedor(null);
+            limpiarCamposCV(null);
+
+            mostrarAlerta(
+                    "Datos actualizados",
+                    "La información de clientes, vendedores y clientes-vendedores se ha actualizado correctamente.",
+                    Alert.AlertType.INFORMATION
+            );
+        }
     }
 }
