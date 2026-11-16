@@ -161,7 +161,9 @@ public class FuncionViewController {
             String error = funcionController.modificarFuncion(codigo, peli, sala, fecha, hora, valor, estado);
             if (error == null) {
                 mostrarAlerta("Éxito", "Función modificada correctamente.", Alert.AlertType.INFORMATION);
-                cargarDatos(null);
+
+                actualizarDatos(null);
+                limpiarCampos(null);
             } else {
                 mostrarAlerta("No se puede modificar", error, Alert.AlertType.ERROR);
             }
@@ -198,5 +200,30 @@ public class FuncionViewController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    @FXML
+    void actualizarDatos(ActionEvent event) {
+        if (funcionController != null) {
+
+            // Actualizar las películas y salas disponibles
+            cargarDatosCombo();
+
+            // Actualizar todas las funciones de la tabla
+            tablaFunciones.setItems(
+                    FXCollections.observableArrayList(
+                            funcionController.obtenerTodasLasFunciones()
+                    )
+            );
+
+            // Forzar la actualización visual de las columnas
+            tablaFunciones.refresh();
+
+            mostrarAlerta(
+                    "Datos actualizados",
+                    "La información de las funciones se ha actualizado correctamente.",
+                    Alert.AlertType.INFORMATION
+            );
+        }
     }
 }

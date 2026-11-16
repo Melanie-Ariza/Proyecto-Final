@@ -91,6 +91,11 @@
                 <DatePicker fx:id="datePickerConsulta" promptText="Selecciona una fecha" />
                 <Button mnemonicParsing="false" onAction="#consultarPorFecha" style="-fx-background-color: #1C1C1C; -fx-font-weight: bold; -fx-cursor: hand;" text="BUSCAR" textFill="WHITE" />
                 <Button mnemonicParsing="false" onAction="#cargarDatos" style="-fx-background-color: #555555; -fx-font-weight: bold; -fx-cursor: hand;" text="VER TODAS" textFill="WHITE" />
+                <Button mnemonicParsing="false"
+                        onAction="#actualizarDatos"
+                        style="-fx-background-color: #C8102E; -fx-font-weight: bold; -fx-cursor: hand;"
+                        text="ACTUALIZAR DATOS"
+                        textFill="WHITE" />
             </children>
         </HBox>
 
